@@ -160,8 +160,8 @@ static void delete_standby_objects(lscene_t *scene)
 
 	for (size_t i = 0; i < scene->to_remove->len; ++i) {
 		go = scene->to_remove->i[i];
-		gtab_remove(scene->objects, go, (void (*)(void *))lgameobject_destroy);
 		gtab_remove(&scene->layered_objects[go->layer], go, NULL);
+		gtab_remove(scene->objects, go, (void (*)(void *))lgameobject_destroy);
 	}
 	gtab_clear(scene->to_remove, NULL);
 }
