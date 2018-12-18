@@ -9,7 +9,7 @@
 
 struct lsf_scene_s;
 
-typedef struct lsfgameoject_s {
+typedef struct lsfgameobject_s {
 	struct lsfgameobject_s *parent;
 	sfSprite *sprite;
 	struct lsf_scene_s *scene;
@@ -18,9 +18,9 @@ typedef struct lsfgameoject_s {
 	gtab_t *childs;
 	int tag;
 	uint32_t layer;
-	void (* start)(struct lsfgameoject_s *this);
-	void (* update)(struct lsfgameoject_s *this);
-	void (* catch_event)(struct lsfgameoject_s *this, const sfEvent *event);
+	void (* start)(struct lsfgameobject_s *this);
+	void (* update)(struct lsfgameobject_s *this);
+	void (* catch_event)(struct lsfgameobject_s *this, const sfEvent *event);
 	void (* destroy_data)(void *data);
 } lgameobject_t;
 

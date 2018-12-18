@@ -21,6 +21,7 @@ void lclock_framerate(lclock_t *clock, uint32_t frame_per_sec)
 {
 	clock->fps = frame_per_sec;
 	clock->tick = (1.0 / (double)clock->fps);
+	lclock_lap(clock);
 }
 
 void lclock_reset(lclock_t *clock)
@@ -48,7 +49,7 @@ void lclock_wait_delta(lclock_t *clock)
 	double now = lclock_time(clock);
 	double elapsed = now - clock->prevlap;
 
-	if (elapsed <= clock->tick) {
-		usleep((useconds_t)((clock->tick - elapsed) * 1000000));
-	}
+	if (elapsed <= clock->tick)
+		usleep((__useconds_t)((clock->tick - elapsed) * 1000000));
+	clock->prevlap = now + (clock->tick - elapsed);
 }

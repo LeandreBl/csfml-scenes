@@ -6,13 +6,18 @@
 # include <lgameobject.h>
 # include <lgtab.h>
 # include <stdbool.h>
+# include <stdio.h>
+
+# define LSF_MAXIMUM_LAYERS (10)
 
 typedef struct lsf_scene_s
 {
 	sfRenderWindow *window;
 	gtab_t *objects;
-	gtab_t *layered_objects;
+	gtab_t *to_add;
+	gtab_t *to_remove;
 	lclock_t *clock;
+	gtab_t layered_objects[LSF_MAXIMUM_LAYERS];
 	bool running;
 } lscene_t;
 
@@ -20,7 +25,7 @@ int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec);
 void lscene_destroy(lscene_t *scene);
 
 int lscene_add_gameobject(lscene_t *scene, lgameobject_t *new);
-void lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj);
+int lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj);
 void lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *name);
 void lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag);
 double lscene_delta_time(lscene_t *scene);

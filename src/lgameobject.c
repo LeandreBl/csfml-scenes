@@ -3,6 +3,22 @@
 
 #include "lscene.h"
 
+static void default_start(__attribute__ ((unused)) lgameobject_t *object)
+{
+}
+
+static void default_update(__attribute__ ((unused)) lgameobject_t *object)
+{
+}
+
+static void default_catch_event(__attribute__ ((unused)) lgameobject_t *object, __attribute__ ((unused)) const sfEvent *event)
+{
+}
+
+static void default_destroy_data(__attribute__ ((unused)) void *data)
+{
+}
+
 lgameobject_t *lgameobject_create(const char *name, lscene_t *scene, void *data)
 {
 	lgameobject_t *new_obj = malloc(sizeof(*new_obj));
@@ -20,6 +36,10 @@ lgameobject_t *lgameobject_create(const char *name, lscene_t *scene, void *data)
 	new_obj->tag = 0;
 	new_obj->layer = 0;
 	new_obj->parent = NULL;
+	new_obj->start = &default_start;
+	new_obj->update = &default_update;
+	new_obj->catch_event = &default_catch_event;
+	new_obj->destroy_data = &default_destroy_data;
 	return (new_obj);
 }
 
