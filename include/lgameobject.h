@@ -18,6 +18,7 @@ typedef struct lsfgameobject_s {
 	gtab_t *childs;
 	int tag;
 	uint32_t layer;
+        ltransform_t transform;
 	void (* start)(struct lsfgameobject_s *this);
 	void (* update)(struct lsfgameobject_s *this);
 	void (* catch_event)(struct lsfgameobject_s *this, const sfEvent *event);

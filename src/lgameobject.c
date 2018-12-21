@@ -25,12 +25,13 @@ lgameobject_t *lgameobject_create(const char *name, lscene_t *scene, void *data)
     lgameobject_t *new_obj = malloc(sizeof(*new_obj));
 
     if (new_obj == NULL)
-        return (NULL);
+            return (NULL);
     new_obj->name = strdup(name);
     new_obj->childs = malloc(sizeof(*new_obj->childs));
     if (new_obj->name == NULL || new_obj->childs == NULL
-        || gtab_create(new_obj->childs, 0) == -1)
-        return (NULL);
+            || gtab_create(new_obj->childs, 0) == -1)
+            return (NULL);
+    ltransform_create(&new_obj->transform, (sfVector2f){0, 0}, (sfVector2f){0, 0});
     new_obj->sprite = sfSprite_create();
     new_obj->scene = scene;
     new_obj->data = data;
@@ -73,4 +74,4 @@ void lgameobject_display(lgameobject_t *obj)
     sfRenderWindow_drawSprite(obj->scene->window, obj->sprite, NULL);
 }
 
-int lgameobject_add_child // todo
+#pragma message "int lgameobject_add_child"
