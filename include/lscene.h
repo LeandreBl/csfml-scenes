@@ -2,22 +2,31 @@
 # define LSCENES_H_
 
 # include <SFML/Graphics.h>
-# include <lclock.h>
-# include <lgameobject.h>
+# include <LSCENE/lclock.h>
+# include <LSCENE/lgameobject.h>
 # include <lgtab.h>
 # include <stdbool.h>
 # include <stdio.h>
 
 # define LSF_MAXIMUM_LAYERS (10)
 
+typedef struct lsfasset_s {
+  char *name;
+  void *data;
+  void (* destructor)(void *);
+} lasset_t;
+
 typedef struct lsf_scene_s
 {
-	sfRenderWindow *window;
-	gtab_t *objects;
-	gtab_t *to_add;
-	gtab_t *to_remove;
-	lclock_t *clock;
-	gtab_t layered_objects[LSF_MAXIMUM_LAYERS];
+  sfRenderWindow *window;
+  lclock_t clock;
+  gtab_t objects;
+  gtab_t to_add;
+  gtab_t to_remove;
+  gtab_t layered_objects[LSF_MAXIMUM_LAYERS];
+  gtab_t fonts;
+  gtab_t images;
+  gtab_t textures;
 	bool running;
 } lscene_t;
 
@@ -30,13 +39,11 @@ void lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *
 void lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag);
 double lscene_delta_time(lscene_t *scene);
 double lscene_time(lscene_t *scene);
+const sfFont *lscene_get_font(lscene_t *scene, const char *name);
+const sfImage *lscene_get_image(lscene_t *scene, const char *name);
+const sfTexture *lscene_get_texture(lscene_t *scene, const char *name);
 void lscene_close(lscene_t *scene);
 void lscene_set_framerate(lscene_t *scene, uint32_t framerate);
 void lscene_run(lscene_t *scene);
-
-/* internal use */
-
-gtab_t *new_gtab(size_t size);
-void del_gtab(void *lbuffer);
 
 #endif /* !LSCENES_H_ */

@@ -10,19 +10,19 @@
 struct lsf_scene_s;
 
 typedef struct lsfgameobject_s {
-	struct lsfgameobject_s *parent;
-	sfSprite *sprite;
-	struct lsf_scene_s *scene;
-	char *name;
-	void *data;
-	gtab_t *childs;
-	int tag;
-	uint32_t layer;
-        ltransform_t transform;
-	void (* start)(struct lsfgameobject_s *this);
-	void (* update)(struct lsfgameobject_s *this);
-	void (* catch_event)(struct lsfgameobject_s *this, const sfEvent *event);
-	void (* destroy_data)(void *data);
+  struct lsfgameobject_s *parent;
+  sfSprite *sprite;
+  struct lsf_scene_s *scene;
+  char *name;
+  void *data;
+  int tag;
+  uint32_t layer;
+  ltransform_t transform;
+  gtab_t childs;
+  void (* start)(struct lsfgameobject_s *this);
+  void (* update)(struct lsfgameobject_s *this);
+  void (* catch_event)(struct lsfgameobject_s *this, const sfEvent *event);
+  void (* destroy_data)(void *data);
 } lgameobject_t;
 
 lgameobject_t *lgameobject_create(const char *name, struct lsf_scene_s *scene, void *data);

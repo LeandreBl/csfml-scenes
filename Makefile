@@ -10,9 +10,10 @@ NAME		= libscsfml.so
 CC		= gcc
 
 LIBS		= -lcsfml-graphics -lcsfml-window -lcsfml-audio -lcsfml-system -lcsfml-network
-LIBS		+= -llgtab
+LIBS		+= -llgtab -llstr
 
 SRCS		= src/scene.c
+SRCS		+= src/textbox.c
 SRCS		+= src/ltransform.c
 SRCS		+= src/lclock.c
 SRCS		+= src/lgameobject.c
@@ -65,7 +66,8 @@ re: fclean all
 install: re
 	@cp $(NAME) /usr/lib/$(NAME) 2> /dev/null || \
 	printf "\033[1m\033[31mError : try sudo make install\033[0m\n" && \
-	cp include/*.h /usr/include/ 2> /dev/null && \
+	mkdir -p /usr/local/include/LSCENE && \
+	cp include/* /usr/local/include/LSCENE 2> /dev/null && \
 	printf "\033[1m\033[32mLibrary successfull installed !\033[0m\n"
 
 .PHONY: all clean fclean re tests_run debug install
