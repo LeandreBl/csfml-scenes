@@ -45,9 +45,15 @@ lgameobject_t *lgameobject_create(const char *name, lscene_t *scene, void *data)
 
 void lgameobject_destroy(lgameobject_t *obj)
 {
+  lgameobject_t *child;
+
   sfSprite_destroy(obj->sprite);
   if (obj->destroy_data != NULL)
     obj->destroy_data(obj->data);
+  for (size_t i = 0; i < obj->childs.len; ++i) {
+    child = obj->childs.i[i];
+    child->parent = NULL;
+  }
   gtab_destroy(&obj->childs, NULL);
   free(obj->name);
   free(obj);
@@ -78,5 +84,6 @@ int lgameobject_add_child(lgameobject_t *obj, lgameobject_t *new_obj)
   if (lscene_add_gameobject(obj->scene, new_obj) == -1 ||
       gtab_append(&obj->childs, new_obj) == -1)
     return (-1);
+  new_obj->parent = obj;
   return (0);
 }
