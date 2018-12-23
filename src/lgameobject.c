@@ -73,4 +73,10 @@ void lgameobject_display(lgameobject_t *obj)
   sfRenderWindow_drawSprite(obj->scene->window, obj->sprite, NULL);
 }
 
-#pragma message "int lgameobject_add_child"
+int lgameobject_add_child(lgameobject_t *obj, lgameobject_t *new_obj)
+{
+  if (lscene_add_gameobject(obj->scene, new_obj) == -1 ||
+      gtab_append(&obj->childs, new_obj) == -1)
+    return (-1);
+  return (0);
+}

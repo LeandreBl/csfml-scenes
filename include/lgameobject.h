@@ -31,6 +31,6 @@ void lgameobject_start(lgameobject_t *obj);
 void lgameobject_update(lgameobject_t *obj);
 void lgameobject_display(lgameobject_t *obj);
 void lgameobject_catch_event(lgameobject_t *obj, const sfEvent *event);
-
+int lgameobject_add_child(lgameobject_t *obj, lgameobject_t *new_obj);
 
 #endif /* !_LGAMEOBJECT_H_ */
