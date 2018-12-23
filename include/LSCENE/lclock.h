@@ -6,15 +6,17 @@
 
 typedef struct lsf_clock_s
 {
-	sfClock *clock;
-	double prevlap;
-	double tick;
-	uint32_t fps;
+  sfClock *clock;
+  sfTime prevlap;
+  sfTime tick;
+  float timescale;
+  uint32_t fps;
 } lclock_t;
 
 int lclock_create(lclock_t *clock, uint32_t frame_per_sec);
 void lclock_destroy(lclock_t *clock);
 
+void lclock_timescale(lclock_t *clock, float scale);
 void lclock_framerate(lclock_t *clock, uint32_t frame_per_sec);
 void lclock_reset(lclock_t *clock);
 double lclock_time(lclock_t *clock);
