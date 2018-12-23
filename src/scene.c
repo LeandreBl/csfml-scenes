@@ -6,17 +6,8 @@
 
 int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec)
 {
-  size_t count;
-  size_t index = 0;
-  const sfVideoMode *modes = sfVideoMode_getFullscreenModes(&count);
-
-  for (size_t i = 0; i < count; ++i) {
-    if (modes[i].height > modes[index].height)
-      index = i;
-  }
-  scene->window = sfRenderWindow_create(modes[index], name,
-                                        sfClose | sfFullscreen, NULL);
-  if (gtab_create(&scene->objects, 20) == -1
+  scene->window = sfRenderWindow_create(sfVideoMode_getDesktopMode(), name, sfClose | sfFullscreen, NULL);
+  if (scene->window == NULL || gtab_create(&scene->objects, 20) == -1
       || gtab_create(&scene->to_remove, 20) == -1
       || gtab_create(&scene->to_add, 20) == -1
       || gtab_create(&scene->fonts, 5) == -1

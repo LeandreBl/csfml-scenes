@@ -22,7 +22,7 @@ void lclock_destroy(lclock_t *clock)
 void lclock_framerate(lclock_t *clock, uint32_t frame_per_sec)
 {
   clock->fps = frame_per_sec;
-  clock->tick = sfSeconds(1.0 / (double)clock->fps);
+  clock->tick = 1.0 / (float)clock->fps;
   lclock_lap(clock);
 }
 
@@ -31,19 +31,19 @@ void lclock_reset(lclock_t *clock)
   sfClock_restart(clock->clock);
 }
 
-double lclock_time(lclock_t *clock)
+float lclock_time(lclock_t *clock)
 {
-  return ((double)(sfTime_asSeconds(sfClock_getElapsedTime(clock->clock))));
+  return (sfTime_asSeconds(sfClock_getElapsedTime(clock->clock)));
 }
 
-double lclock_delta_time(lclock_t *clock)
+float lclock_delta_time(lclock_t *clock)
 {
-  return (sfTime_asSeconds(clock->tick));
+  return (clock->tick);
 }
 
 void lclock_lap(lclock_t *clock)
 {
-  clock->prevlap = sfClock_getElapsedTime(clock->clock);
+  clock->prevlap = lclock_time(clock);
 }
 
 void lclock_timescale(lclock_t *clock, float scale)
@@ -53,10 +53,10 @@ void lclock_timescale(lclock_t *clock, float scale)
 
 void lclock_wait_delta(lclock_t *clock)
 {
-  sfTime now = sfClock_getElapsedTime(clock->clock);
-  sfTime elapsed = sfMicroseconds(now.microseconds - clock->prevlap.microseconds);
+  float now = lclock_time(clock);
+  float elapsed = now - clock->prevlap;
 
-  if (now.microseconds * clock->timescale <= clock->tick.microseconds)
-    sfSleep(sfMicroseconds(clock->tick.microseconds - elapsed.microseconds));
-  clock->prevlap = sfMicroseconds(now.microseconds + clock->tick.microseconds - elapsed.microseconds);
+  if (elapsed <= clock->tick)
+    sfSleep(sfSeconds(clock->tick - elapsed));
+  clock->prevlap = now + (clock->tick - elapsed);
 }

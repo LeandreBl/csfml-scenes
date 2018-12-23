@@ -13,6 +13,7 @@ LIBS		= -lcsfml-graphics -lcsfml-window -lcsfml-audio -lcsfml-system -lcsfml-net
 LIBS		+= -llgtab -llstr
 
 SRCS		= src/scene.c
+SRCS		+= src/vector.c
 SRCS		+= src/textbox.c
 SRCS		+= src/ltransform.c
 SRCS		+= src/lclock.c
@@ -64,7 +65,7 @@ fclean: clean
 re: fclean all
 
 install: re
-	@cp $(NAME) /usr/lib/$(NAME) 2> /dev/null || \
+	@cp $(NAME) /usr/local/lib/$(NAME) 2> /dev/null || \
 	printf "\033[1m\033[31mError : try sudo make install\033[0m\n" && \
 	mkdir -p /usr/local/include/LSCENE && \
 	cp -r include/LSCENE /usr/local/include/ 2> /dev/null && \
