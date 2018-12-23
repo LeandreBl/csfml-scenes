@@ -39,6 +39,7 @@ void lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *
 void lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag);
 double lscene_delta_time(lscene_t *scene);
 double lscene_time(lscene_t *scene);
+void lscene_timescale(lscene_t *scene, float timescale);
 const sfFont *lscene_get_font(lscene_t *scene, const char *name);
 const sfImage *lscene_get_image(lscene_t *scene, const char *name);
 const sfTexture *lscene_get_texture(lscene_t *scene, const char *name);

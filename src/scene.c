@@ -109,6 +109,11 @@ double lscene_time(lscene_t *scene)
   return (lclock_time(&scene->clock));
 }
 
+void lscene_timescale(lscene_t *scene, float timescale)
+{
+  lclock_timescale(&scene->clock, timescale);
+}
+
 void lscene_close(lscene_t *scene)
 {
   scene->running = false;
