@@ -26,7 +26,7 @@ TESTS_OBJS	= $(TESTS_SRCS:.c=.o)
 RM		= rm -f
 
 CFLAGS		= -Werror -Wall -Wextra -fPIC -pedantic
-CFLAGS		+= -I ./include
+CFLAGS		+= -I ./include -I ./include/LSCENE
 LDFLAGS		= -shared
 
 GREEN		= '\033[0;32m'
@@ -67,7 +67,7 @@ install: re
 	@cp $(NAME) /usr/lib/$(NAME) 2> /dev/null || \
 	printf "\033[1m\033[31mError : try sudo make install\033[0m\n" && \
 	mkdir -p /usr/local/include/LSCENE && \
-	cp include/* /usr/local/include/LSCENE 2> /dev/null && \
+	cp -r include/LSCENE /usr/local/include/ 2> /dev/null && \
 	printf "\033[1m\033[32mLibrary successfull installed !\033[0m\n"
 
 .PHONY: all clean fclean re tests_run debug install
