@@ -29,7 +29,7 @@ void ltextbox_set_position(lgameobject_t *textbox, sfVector2f position)
 {
   ltextbox_t *data = textbox->data;
 
-  textbox->transform.position = position;
+  lgameobject_set_position(textbox, position);
   sfText_setPosition(data->render_text, position);
 }
 
@@ -100,7 +100,7 @@ static void start(lgameobject_t *obj)
   if (data->font == NULL)
     fprintf(stderr, "%s: error: no font set\n", obj->name);
   else {
-    ltextbox_set_position(obj, obj->transform.position);
+    ltextbox_set_position(obj, lgameobject_get_position(obj));
     ltextbox_set_color(obj, data->color);
     ltextbox_set_font(obj, data->font);
     ltextbox_set_character_size(obj, 20);
@@ -129,7 +129,7 @@ lgameobject_t *ltextbox_create(lscene_t *scene, sfVector2f position, const char 
   if (data->render_text == NULL)
     return (NULL);
   data->color = sfBlack;
-  tb->transform.position = position;
+  ltextbox_set_position(tb, position);
   if (lstr_create(&data->string, "") == -1
       || lstr_create(&data->placeholder, placeholder) == -1)
     return (NULL);

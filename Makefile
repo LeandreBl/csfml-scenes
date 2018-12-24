@@ -13,6 +13,7 @@ LIBS		= -lcsfml-graphics -lcsfml-window -lcsfml-audio -lcsfml-system -lcsfml-net
 LIBS		+= -llgtab -llstr
 
 SRCS		= src/scene.c
+SRCS		+= src/lbutton.c
 SRCS		+= src/vector.c
 SRCS		+= src/textbox.c
 SRCS		+= src/ltransform.c
@@ -27,7 +28,7 @@ TESTS_OBJS	= $(TESTS_SRCS:.c=.o)
 RM		= rm -f
 
 CFLAGS		= -Werror -Wall -Wextra -fPIC -pedantic
-CFLAGS		+= -I ./include -I ./include/LSCENE
+CFLAGS		+= -I ./include -I ./include/LSCENE -O3
 LDFLAGS		= -shared
 
 GREEN		= '\033[0;32m'

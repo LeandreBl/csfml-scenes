@@ -1,6 +1,7 @@
 #ifndef _LGAMEOBJECT_H_
 # define _LGAMEOBJECT_H_
 
+# include <stdint.h>
 # include <SFML/Window/Event.h>
 # include <SFML/Graphics/Sprite.h>
 # include <lgtab.h>
@@ -17,7 +18,6 @@ typedef struct lsfgameobject_s {
   void *data;
   int tag;
   uint32_t layer;
-  ltransform_t transform;
   gtab_t childs;
   void (* start)(struct lsfgameobject_s *this);
   void (* update)(struct lsfgameobject_s *this);
@@ -32,5 +32,8 @@ void lgameobject_update(lgameobject_t *obj);
 void lgameobject_display(lgameobject_t *obj);
 void lgameobject_catch_event(lgameobject_t *obj, const sfEvent *event);
 int lgameobject_add_child(lgameobject_t *obj, lgameobject_t *new_obj);
+void lgameobject_set_position(lgameobject_t *obj, sfVector2f position);
+sfVector2f lgameobject_get_position(lgameobject_t *obj);
+void lgameobject_move(lgameobject_t *obj, sfVector2f offset);
 
 #endif /* !_LGAMEOBJECT_H_ */

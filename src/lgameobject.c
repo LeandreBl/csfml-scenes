@@ -29,7 +29,6 @@ lgameobject_t *lgameobject_create(const char *name, lscene_t *scene, void *data)
   new_obj->name = strdup(name);
   if (new_obj->name == NULL || gtab_create(&new_obj->childs, 0) == -1)
     return (NULL);
-  ltransform_create(&new_obj->transform, (sfVector2f){0, 0}, (sfVector2f){0, 0});
   new_obj->sprite = sfSprite_create();
   new_obj->scene = scene;
   new_obj->data = data;
@@ -86,4 +85,19 @@ int lgameobject_add_child(lgameobject_t *obj, lgameobject_t *new_obj)
     return (-1);
   new_obj->parent = obj;
   return (0);
+}
+
+void lgameobject_set_position(lgameobject_t *obj, sfVector2f position)
+{
+  sfSprite_setPosition(obj->sprite, position);
+}
+
+sfVector2f lgameobject_get_position(lgameobject_t *obj)
+{
+  return (sfSprite_getPosition(obj->sprite));
+}
+
+void lgameobject_move(lgameobject_t *obj, sfVector2f offset)
+{
+  sfSprite_move(obj->sprite, offset);
 }
