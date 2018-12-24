@@ -6,7 +6,10 @@
 
 int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec)
 {
-  scene->window = sfRenderWindow_create(sfVideoMode_getDesktopMode(), name, sfClose | sfFullscreen, NULL);
+  size_t count;
+  const sfVideoMode *modes = sfVideoMode_getFullscreenModes(&count);	
+
+  scene->window = sfRenderWindow_create(modes[0], name, sfClose | sfFullscreen, NULL);
   if (scene->window == NULL || gtab_create(&scene->objects, 20) == -1
       || gtab_create(&scene->to_remove, 20) == -1
       || gtab_create(&scene->to_add, 20) == -1
@@ -175,6 +178,7 @@ void lscene_run(lscene_t *scene)
   lgameobject_t *obj;
 
   scene->running = true;
+  lclock_reset(&scene->clock);
   while (scene->running) {
     while (sfRenderWindow_pollEvent(scene->window, &event)) {
       for (size_t i = 0; i < scene->objects.len; ++i) {
