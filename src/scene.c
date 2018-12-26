@@ -154,6 +154,10 @@ static int deploy_add_objects(lscene_t *scene)
     if (gtab_append(&scene->objects, go) == -1
         || gtab_append(&scene->layered_objects[go->layer], go) == -1)
       return (-1);
+  }
+  for (size_t i = 0; i < scene->to_add.len; ++i) {
+    go = scene->to_add.i[i];
+    go->scene = scene;
     lgameobject_start(go);
   }
   gtab_clear(&scene->to_add, NULL);
@@ -242,7 +246,7 @@ const sfImage *lscene_get_image(lscene_t *scene, const char *name)
   if (asset == NULL)
     return (NULL);
   asset->data = image;
-  gtab_append(&scene->fonts, asset);
+  gtab_append(&scene->images, asset);
   return (asset->data);
 }
 
@@ -260,6 +264,6 @@ const sfTexture *lscene_get_texture(lscene_t *scene, const char *name)
   if (asset == NULL)
     return (NULL);
   asset->data = texture;
-  gtab_append(&scene->fonts, asset);
+  gtab_append(&scene->textures, asset);
   return (asset->data);
 }

@@ -4,138 +4,140 @@
 
 void ltextbox_set_font(lgameobject_t *textbox, const sfFont *font)
 {
-  ltextbox_t *data = textbox->data;
+  ltextbox_t *obj = (ltextbox_t *)textbox;
 
-  data->font = font;
-  sfText_setFont(data->render_text, font);
+  obj->font = font;
+  sfText_setFont(obj->render_text, font);
 }
 
 void ltextbox_set_character_size(lgameobject_t *textbox, uint32_t size)
 {
-  ltextbox_t *data = textbox->data;
+  ltextbox_t *obj = (ltextbox_t *)textbox;
 
-  sfText_setCharacterSize(data->render_text, size);
+  sfText_setCharacterSize(obj->render_text, size);
 }
 
 void ltextbox_set_color(lgameobject_t *textbox, sfColor color)
 {
-  ltextbox_t *data = textbox->data;
+  ltextbox_t *obj = (ltextbox_t *)textbox;
 
-  data->color = color;
-  sfText_setFillColor(data->render_text, color);
+  obj->color = color;
+  sfText_setFillColor(obj->render_text, color);
 }
 
 void ltextbox_set_position(lgameobject_t *textbox, sfVector2f position)
 {
-  ltextbox_t *data = textbox->data;
+  ltextbox_t *obj = (ltextbox_t *)textbox;
 
   lgameobject_set_position(textbox, position);
-  sfText_setPosition(data->render_text, position);
+  sfText_setPosition(obj->render_text, position);
 }
 
-static void update(lgameobject_t *obj)
+static void update(lgameobject_t *textbox)
 {
-  ltextbox_t *data = obj->data;
+  ltextbox_t *obj = (ltextbox_t *)textbox;
 
-  if (lscene_time(obj->scene) - data->elapsed >= 1.0) {
-    data->blink = !data->blink;
-    data->elapsed = lscene_time(obj->scene);
+  if (lscene_time(textbox->scene) - obj->elapsed >= 1.0) {
+    obj->blink = !obj->blink;
+    obj->elapsed = lscene_time(textbox->scene);
   }
-  if (data->string.len == 0 && !data->selected) {
-    sfText_setString(data->render_text, data->placeholder.i);
-    sfText_setFillColor(data->render_text, sfColor_fromRGB(data->color.r / 2, data->color.g / 2, data->color.b / 2));
+  if (obj->string.len == 0 && !obj->selected) {
+    sfText_setString(obj->render_text, obj->placeholder.i);
+    sfText_setFillColor(obj->render_text, sfColor_fromRGB(obj->color.r / 2, obj->color.g / 2, obj->color.b / 2));
   }
   else {
-    ltextbox_set_color(obj, data->color);
-    if (data->blink && data->selected)
-      lstr_addch(&data->string, '|');
-    sfText_setString(data->render_text, data->string.i);
-    if (data->blink && data->selected)
-      lstr_erase(&data->string, data->string.len - 1, 1);
+    ltextbox_set_color(textbox, obj->color);
+    if (obj->blink && obj->selected)
+      lstr_addch(&obj->string, '|');
+    sfText_setString(obj->render_text, obj->string.i);
+    if (obj->blink && obj->selected)
+      lstr_erase(&obj->string, obj->string.len - 1, 1);
   }
-  sfRenderWindow_drawText(obj->scene->window, data->render_text, NULL);
+  sfRenderWindow_drawText(textbox->scene->window, obj->render_text, NULL);
 }
 
-static void catch_event(lgameobject_t *obj, const sfEvent *event)
+static void catch_event(lgameobject_t *textbox, const sfEvent *event)
 {
-  ltextbox_t *data = obj->data;
-  sfFloatRect rect = sfText_getGlobalBounds(data->render_text);
+  ltextbox_t *obj = (ltextbox_t *)textbox;
+  sfFloatRect rect = sfText_getGlobalBounds(obj->render_text);
   char value;
 
   if (event->type == sfEvtMouseButtonPressed) {
     if (sfFloatRect_contains(&rect, event->mouseButton.x, event->mouseButton.y))
-      data->clicked = true;
+      obj->clicked = true;
     else {
-      data->clicked = false;
-      data->selected = false;
+      obj->clicked = false;
+      obj->selected = false;
     }
   }
   else if (event->type == sfEvtMouseButtonReleased
       && sfFloatRect_contains(&rect, event->mouseButton.x, event->mouseButton.y)
-      && data->clicked == true)
-    data->selected = true;
-  if (data->selected == true) {
+      && obj->clicked == true)
+    obj->selected = true;
+  if (obj->selected == true) {
     if (event->type == sfEvtKeyPressed) {
-      if (data->string.len > 0 && event->key.code == sfKeyBack)
-        lstr_erase(&data->string, data->string.len - 1, 1);
+      if (obj->string.len > 0 && event->key.code == sfKeyBack)
+        lstr_erase(&obj->string, obj->string.len - 1, 1);
       else if (event->key.code == sfKeyReturn) {
-        data->selected = false;
-        data->clicked = false;
+        obj->selected = false;
+        obj->clicked = false;
       }
     }
     else if (event->type == sfEvtTextEntered) {
       value = event->text.unicode;
       if (value >= ' ' && value < 127)
-        lstr_addch(&data->string, value);
+        lstr_addch(&obj->string, value);
     }
   }
 }
 
-static void start(lgameobject_t *obj)
+static void start(lgameobject_t *textbox)
 {
-  ltextbox_t *data = obj->data;
+  ltextbox_t *obj = (ltextbox_t *)textbox;
+  lasset_t *font_asset;
 
-  if (data->font == NULL && obj->scene->fonts.len > 0)
-    data->font = obj->scene->fonts.i[0];
-  if (data->font == NULL)
-    fprintf(stderr, "%s: error: no font set\n", obj->name);
-  else {
-    ltextbox_set_position(obj, lgameobject_get_position(obj));
-    ltextbox_set_color(obj, data->color);
-    ltextbox_set_font(obj, data->font);
-    ltextbox_set_character_size(obj, 20);
+  if (obj->font == NULL) {
+    if (textbox->scene->fonts.len != 0) {
+      font_asset = textbox->scene->fonts.i[0];
+      ltextbox_set_font(textbox, font_asset->data);
+    } else {
+      fprintf(stderr, "Textbox: error: not font set\n");
+    }
   }
+  ltextbox_set_position(textbox, lgameobject_get_position(textbox));
+  ltextbox_set_color(textbox, obj->color);
+  ltextbox_set_character_size(textbox, 20);
 }
 
-static void destroy_data(void *obj_data)
+static void destroy(lgameobject_t *object)
 {
-  ltextbox_t *data = obj_data;
+  ltextbox_t *obj = (ltextbox_t *)object;
 
-  lstr_destroy(&data->string);
-  lstr_destroy(&data->placeholder);
-  sfText_destroy(data->render_text);
-  free(data);
+  lstr_destroy(&obj->string);
+  lstr_destroy(&obj->placeholder);
+  sfText_destroy(obj->render_text);
 }
 
-lgameobject_t *ltextbox_create(lscene_t *scene, sfVector2f position, const char *placeholder)
+lgameobject_t *ltextbox_create(sfVector2f position, const char *placeholder, uint32_t character_size, sfColor color)
 {
-  ltextbox_t *data = calloc(1, sizeof(*data));
-  lgameobject_t *tb = lgameobject_create("textbox", scene, data);
+  ltextbox_t *obj = calloc(1, sizeof(*obj));
 
-  if (data == NULL || tb == NULL)
+  if (obj == NULL
+      || lgameobject_create(&obj->base_object, "textbox") == -1)
     return (NULL);
-  tb->data = data;
-  data->render_text = sfText_create();
-  if (data->render_text == NULL)
+  obj->render_text = sfText_create();
+  if (obj->render_text == NULL)
     return (NULL);
-  data->color = sfBlack;
-  ltextbox_set_position(tb, position);
-  if (lstr_create(&data->string, "") == -1
-      || lstr_create(&data->placeholder, placeholder) == -1)
+  obj->color = sfBlack;
+  ltextbox_set_position((lgameobject_t *)obj, position);
+  ltextbox_set_character_size((lgameobject_t *)obj, character_size);
+  ltextbox_set_color((lgameobject_t *)obj, color);
+  if (lstr_create(&obj->string, "") == -1
+      || lstr_create(&obj->placeholder, placeholder) == -1)
     return (NULL);
-  tb->start = &start;
-  tb->update = &update;
-  tb->catch_event = &catch_event;
-  tb->destroy_data = &destroy_data;
-  return (tb);
+  obj->base_object.start = &start;
+  obj->base_object.update = &update;
+  obj->base_object.catch_event = &catch_event;
+  obj->base_object.destroy = &destroy;
+  return ((lgameobject_t *)obj);
 }
