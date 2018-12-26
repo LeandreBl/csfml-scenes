@@ -18,10 +18,12 @@ static void update(lgameobject_t *obj)
     }
     else
       button->moved = false;
-  } else if (button->moved) {
+  }
+  else if (button->moved) {
     if (sfFloatRect_contains(&rect, button->at.x, button->at.y))
       sfSprite_setColor(obj->sprite, sfColor_fromRGB(170, 170, 170));
-  } else
+  }
+  else
     sfSprite_setColor(obj->sprite, sfWhite);
 }
 
@@ -43,7 +45,8 @@ static void catch_event(lgameobject_t *obj, const sfEvent *event)
   }
 }
 
-lgameobject_t *lbutton_create(sfVector2f position, const sfTexture *texture, void (*caller)(lgameobject_t *))
+lgameobject_t *lbutton_create(sfVector2f position, const sfTexture *texture,
+                              void (*caller)(lgameobject_t *))
 {
   lbutton_t *button = calloc(1, sizeof(*button));
 

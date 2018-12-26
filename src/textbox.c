@@ -43,7 +43,9 @@ static void update(lgameobject_t *textbox)
   }
   if (obj->string.len == 0 && !obj->selected) {
     sfText_setString(obj->render_text, obj->placeholder.i);
-    sfText_setFillColor(obj->render_text, sfColor_fromRGB(obj->color.r / 2, obj->color.g / 2, obj->color.b / 2));
+    sfText_setFillColor(obj->render_text,
+                        sfColor_fromRGB(obj->color.r / 2, obj->color.g / 2,
+                                        obj->color.b / 2));
   }
   else {
     ltextbox_set_color(textbox, obj->color);
@@ -71,8 +73,9 @@ static void catch_event(lgameobject_t *textbox, const sfEvent *event)
     }
   }
   else if (event->type == sfEvtMouseButtonReleased
-      && sfFloatRect_contains(&rect, event->mouseButton.x, event->mouseButton.y)
-      && obj->clicked == true)
+           && sfFloatRect_contains(&rect, event->mouseButton.x,
+                                   event->mouseButton.y)
+           && obj->clicked == true)
     obj->selected = true;
   if (obj->selected == true) {
     if (event->type == sfEvtKeyPressed) {
@@ -100,7 +103,8 @@ static void start(lgameobject_t *textbox)
     if (textbox->scene->fonts.len != 0) {
       font_asset = textbox->scene->fonts.i[0];
       ltextbox_set_font(textbox, font_asset->data);
-    } else {
+    }
+    else {
       fprintf(stderr, "Textbox: error: not font set\n");
     }
   }
@@ -118,12 +122,12 @@ static void destroy(lgameobject_t *object)
   sfText_destroy(obj->render_text);
 }
 
-lgameobject_t *ltextbox_create(sfVector2f position, const char *placeholder, uint32_t character_size, sfColor color)
+lgameobject_t *ltextbox_create(sfVector2f position, const char *placeholder,
+                               uint32_t character_size, sfColor color)
 {
   ltextbox_t *obj = calloc(1, sizeof(*obj));
 
-  if (obj == NULL
-      || lgameobject_create(&obj->base_object, "textbox") == -1)
+  if (obj == NULL || lgameobject_create(&obj->base_object, "textbox") == -1)
     return (NULL);
   obj->render_text = sfText_create();
   if (obj->render_text == NULL)

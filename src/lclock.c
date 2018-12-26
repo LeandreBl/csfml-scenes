@@ -45,7 +45,7 @@ double lclock_time(lclock_t *clock)
 double lclock_rtime(lclock_t *clock)
 {
   double rtime = sfTime_asSeconds(sfClock_getElapsedTime(clock->clock));
-  
+
   clock->time += (rtime - clock->prevtime) * clock->timescale;
   clock->prevtime = rtime;
   return (rtime);

@@ -6,10 +6,10 @@
 
 typedef struct lsfbutton_s {
   lgameobject_t base_object;
+  void (*tocall)(lgameobject_t *);
+  sfVector2i at;
   bool moved;
   bool pressed;
-  sfVector2i at;
-  void (*tocall)(lgameobject_t *);
 } lbutton_t;
 
 lgameobject_t *lbutton_create(sfVector2f position, const sfTexture *texture, void (*caller)(lgameobject_t *));
