@@ -5,8 +5,7 @@
 # include <SFML/Window/Event.h>
 # include <SFML/Graphics/Sprite.h>
 # include <lgtab.h>
-
-# include "ltransform.h"
+# include <LSCENE/lgameobject_types.h>
 
 struct lsf_scene_s;
 
@@ -16,6 +15,7 @@ typedef struct lsfgameobject_s {
   struct lsf_scene_s *scene;
   char *name;
   int tag;
+  enum lgameobject_type type;
   uint32_t layer;
   gtab_t childs;
   void (* start)(struct lsfgameobject_s *self);

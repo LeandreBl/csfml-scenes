@@ -1,0 +1,10 @@
+#ifndef LGAMEOBJECT_TYPES_H_
+# define LGAMEOBJECT_TYPES_H_
+
+enum lgameobject_type {
+  LEMPTY_GAMEOBJECT_TYPE,
+  LTEXTBOX_TYPE,
+  LBUTTON_TYPE,
+};
+
+#endif /* !LGAMEOBJECT_TYPES_H_ */

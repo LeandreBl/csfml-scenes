@@ -36,6 +36,7 @@ int lgameobject_create(lgameobject_t *new_obj, const char *name)
     return (-1);
   new_obj->sprite = sfSprite_create();
   new_obj->tag = 0;
+  new_obj->type = LEMPTY_GAMEOBJECT_TYPE;
   new_obj->layer = 0;
   new_obj->parent = NULL;
   new_obj->start = &default_start;

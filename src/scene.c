@@ -105,6 +105,17 @@ void lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag)
   }
 }
 
+void lscene_get_objects_by_type(lscene_t *scene, gtab_t *empty_tab, enum lgameobject_type type)
+{
+  lgameobject_t *obj;
+
+  for (size_t i = 0; i < scene->objects.len; ++i) {
+    obj = scene->objects.i[i];
+    if (obj->type == type)
+      gtab_append(empty_tab, obj);
+  }
+}
+
 double lscene_delta_time(lscene_t *scene)
 {
   return (lclock_delta_time(&scene->clock));

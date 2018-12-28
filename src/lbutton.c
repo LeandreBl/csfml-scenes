@@ -57,6 +57,7 @@ lgameobject_t *lbutton_create(sfVector2f position, const sfTexture *texture,
   button->tocall = caller;
   lgameobject_set_position(&button->base_object, position);
   lbutton_set_texture(&button->base_object, texture);
+  button->base_object.type = LBUTTON_TYPE;
   button->base_object.catch_event = &catch_event;
   button->base_object.update = &update;
   return ((lgameobject_t *)button);

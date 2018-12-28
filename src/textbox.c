@@ -139,6 +139,7 @@ lgameobject_t *ltextbox_create(sfVector2f position, const char *placeholder,
   if (lstr_create(&obj->string, "") == -1
       || lstr_create(&obj->placeholder, placeholder) == -1)
     return (NULL);
+  obj->base_object.type = LTEXTBOX_TYPE;
   obj->base_object.start = &start;
   obj->base_object.update = &update;
   obj->base_object.catch_event = &catch_event;

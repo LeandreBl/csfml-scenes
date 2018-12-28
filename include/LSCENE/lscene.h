@@ -8,6 +8,8 @@
 # include <stdbool.h>
 # include <stdio.h>
 
+# include <LSCENE/lgameobject_types.h>
+
 # define LSF_MAXIMUM_LAYERS (10)
 
 typedef struct lsfasset_s {
@@ -40,6 +42,7 @@ int lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj);
 
 void lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *name);
 void lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag);
+void lscene_get_objects_by_type(lscene_t *scene, gtab_t *empty_tab, enum lgameobject_type type);
 
 double lscene_delta_time(lscene_t *scene);
 double lscene_time(lscene_t *scene);
