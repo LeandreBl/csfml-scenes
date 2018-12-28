@@ -31,21 +31,24 @@ typedef struct lsf_scene_s
 } lscene_t;
 
 int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec);
+void lscene_run(lscene_t *scene);
+void lscene_close(lscene_t *scene);
 void lscene_destroy(lscene_t *scene);
 
-int lscene_add_gameobject(lscene_t *scene, lgameobject_t *new);
+int lscene_add_gameobject(lscene_t *scene, lgameobject_t *new_obj);
 int lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj);
+
 void lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *name);
 void lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag);
+
 double lscene_delta_time(lscene_t *scene);
 double lscene_time(lscene_t *scene);
 double lscene_rtime(lscene_t *scene);
 void lscene_timescale(lscene_t *scene, float timescale);
+void lscene_set_framerate(lscene_t *scene, uint32_t framerate);
+
 const sfFont *lscene_get_font(lscene_t *scene, const char *name);
 const sfImage *lscene_get_image(lscene_t *scene, const char *name);
 const sfTexture *lscene_get_texture(lscene_t *scene, const char *name);
-void lscene_close(lscene_t *scene);
-void lscene_set_framerate(lscene_t *scene, uint32_t framerate);
-void lscene_run(lscene_t *scene);
 
 #endif /* !LSCENES_H_ */

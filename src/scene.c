@@ -68,9 +68,9 @@ void lscene_destroy(lscene_t *scene)
   gtab_destroy(&scene->textures, (void (*)(void *))asset_destroy);
 }
 
-int lscene_add_gameobject(lscene_t *scene, lgameobject_t *new)
+int lscene_add_gameobject(lscene_t *scene, lgameobject_t *new_obj)
 {
-  if (gtab_append(&scene->to_add, new) == -1)
+  if (gtab_append(&scene->to_add, new_obj) == -1)
     return (-1);
   return (0);
 }
