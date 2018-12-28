@@ -20,7 +20,8 @@ static void update(lgameobject_t *obj)
       button->moved = false;
   }
   else if (button->moved) {
-    if (sfFloatRect_contains(&rect, button->at.x, button->at.y))
+    button->moved = sfFloatRect_contains(&rect, button->at.x, button->at.y);
+    if (button->moved)
       sfSprite_setColor(obj->sprite, sfColor_fromRGB(170, 170, 170));
   }
   else
