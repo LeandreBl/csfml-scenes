@@ -20,6 +20,15 @@ static void default_destroy(__attribute__((unused)) lgameobject_t *object)
 {
 }
 
+lgameobject_t *lgameobject_empty(const char *name)
+{
+  lgameobject_t *new_obj = calloc(1, sizeof(*new_obj));
+
+  if (new_obj == NULL || lgameobject_create(new_obj, name) == -1)
+    return (NULL);
+  return (new_obj);
+}
+
 int lgameobject_create(lgameobject_t *new_obj, const char *name)
 {
   new_obj->name = strdup(name);

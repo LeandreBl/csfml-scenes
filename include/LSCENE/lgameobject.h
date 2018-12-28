@@ -24,6 +24,7 @@ typedef struct lsfgameobject_s {
   void (* destroy)(struct lsfgameobject_s *self);
 } lgameobject_t;
 
+lgameobject_t *lgameobject_empty(const char *name);
 int lgameobject_create(lgameobject_t *obj, const char *name);
 void lgameobject_destroy(lgameobject_t *obj);
 void lgameobject_start(lgameobject_t *obj);
