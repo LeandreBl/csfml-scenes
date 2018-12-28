@@ -146,3 +146,10 @@ lgameobject_t *ltextbox_create(sfVector2f position, const char *placeholder,
   obj->base_object.destroy = &destroy;
   return ((lgameobject_t *)obj);
 }
+
+const lstr_t *ltextbox_get_string(lgameobject_t *textbox)
+{
+  ltextbox_t *obj = (ltextbox_t *)textbox;
+
+  return (&obj->string);
+}

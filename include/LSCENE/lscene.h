@@ -40,9 +40,9 @@ void lscene_destroy(lscene_t *scene);
 int lscene_add_gameobject(lscene_t *scene, lgameobject_t *new_obj);
 int lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj);
 
-void lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *name);
-void lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag);
-void lscene_get_objects_by_type(lscene_t *scene, gtab_t *empty_tab, enum lgameobject_type type);
+int lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *name);
+int lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag);
+int lscene_get_objects_by_type(lscene_t *scene, gtab_t *empty_tab, enum lgameobject_type type);
 
 double lscene_delta_time(lscene_t *scene);
 double lscene_time(lscene_t *scene);

@@ -82,38 +82,47 @@ int lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj)
   return (0);
 }
 
-void lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab,
+int lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab,
                                 const char *name)
 {
   lgameobject_t *obj;
 
+  if (gtab_create(empty_tab, 10) == -1)
+    return (-1);
   for (size_t i = 0; i < scene->objects.len; ++i) {
     obj = scene->objects.i[i];
-    if (strcmp(obj->name, name) == 0)
-      gtab_append(empty_tab, obj);
+    if (strcmp(obj->name, name) == 0 && gtab_append(empty_tab, obj) == -1)
+      return (-1);
   }
+  return (0);
 }
 
-void lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag)
+int lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag)
 {
   lgameobject_t *obj;
 
+  if (gtab_create(empty_tab, 10) == -1)
+    return (-1);
   for (size_t i = 0; i < scene->objects.len; ++i) {
     obj = scene->objects.i[i];
-    if (obj->tag == tag)
-      gtab_append(empty_tab, obj);
+    if (obj->tag == tag && gtab_append(empty_tab, obj) == -1)
+      return (-1);
   }
+  return (0);
 }
 
-void lscene_get_objects_by_type(lscene_t *scene, gtab_t *empty_tab, enum lgameobject_type type)
+int lscene_get_objects_by_type(lscene_t *scene, gtab_t *empty_tab, enum lgameobject_type type)
 {
   lgameobject_t *obj;
 
+  if (gtab_create(empty_tab, 10) == -1)
+    return (-1);
   for (size_t i = 0; i < scene->objects.len; ++i) {
     obj = scene->objects.i[i];
-    if (obj->type == type)
-      gtab_append(empty_tab, obj);
+    if (obj->type == type && gtab_append(empty_tab, obj) == -1)
+      return (-1);
   }
+  return (0);
 }
 
 double lscene_delta_time(lscene_t *scene)
