@@ -133,14 +133,14 @@ lgameobject_t *ltextbox_create(sfVector2f position, const char *placeholder,
   if (lstr_create(&obj->string, "") == -1
       || lstr_create(&obj->placeholder, placeholder) == -1)
     return (NULL);
+  ltextbox_set_position((lgameobject_t *)obj, position);
+  ltextbox_set_character_size((lgameobject_t *)obj, character_size);
+  ltextbox_set_color((lgameobject_t *)obj, color);
   obj->base_object.type = LTEXTBOX_TYPE;
   obj->base_object.start = &start;
   obj->base_object.update = &update;
   obj->base_object.catch_event = &catch_event;
   obj->base_object.destroy = &destroy;
-  ltextbox_set_position((lgameobject_t *)obj, position);
-  ltextbox_set_character_size((lgameobject_t *)obj, character_size);
-  ltextbox_set_color((lgameobject_t *)obj, color);
   return ((lgameobject_t *)obj);
 }
 
