@@ -5,7 +5,7 @@
 ## makefile
 ##
 
-NAME		= libscsfml.so
+NAME		= liblscene.so
 
 CC		= gcc
 
