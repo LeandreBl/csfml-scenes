@@ -108,9 +108,6 @@ static void start(lgameobject_t *textbox)
       fprintf(stderr, "Textbox: error: not font set\n");
     }
   }
-  ltextbox_set_position(textbox, lgameobject_get_position(textbox));
-  ltextbox_set_color(textbox, obj->color);
-  ltextbox_set_character_size(textbox, 20);
 }
 
 static void destroy(lgameobject_t *object)
@@ -133,9 +130,6 @@ lgameobject_t *ltextbox_create(sfVector2f position, const char *placeholder,
   if (obj->render_text == NULL)
     return (NULL);
   obj->color = sfBlack;
-  ltextbox_set_position((lgameobject_t *)obj, position);
-  ltextbox_set_character_size((lgameobject_t *)obj, character_size);
-  ltextbox_set_color((lgameobject_t *)obj, color);
   if (lstr_create(&obj->string, "") == -1
       || lstr_create(&obj->placeholder, placeholder) == -1)
     return (NULL);
@@ -144,6 +138,9 @@ lgameobject_t *ltextbox_create(sfVector2f position, const char *placeholder,
   obj->base_object.update = &update;
   obj->base_object.catch_event = &catch_event;
   obj->base_object.destroy = &destroy;
+  ltextbox_set_position((lgameobject_t *)obj, position);
+  ltextbox_set_character_size((lgameobject_t *)obj, character_size);
+  ltextbox_set_color((lgameobject_t *)obj, color);
   return ((lgameobject_t *)obj);
 }
 
