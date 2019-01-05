@@ -6,6 +6,7 @@
 # include <SFML/Graphics/Sprite.h>
 # include <lgtab.h>
 # include <LSCENE/lgameobject_types.h>
+# include <sys/cdefs.h>
 
 struct lsf_scene_s;
 
@@ -24,16 +25,16 @@ typedef struct lsfgameobject_s {
   void (* destroy)(struct lsfgameobject_s *self);
 } lgameobject_t;
 
-lgameobject_t *lgameobject_empty(const char *name);
-int lgameobject_create(lgameobject_t *obj, const char *name);
-void lgameobject_destroy(lgameobject_t *obj);
-void lgameobject_start(lgameobject_t *obj);
-void lgameobject_update(lgameobject_t *obj);
-void lgameobject_display(lgameobject_t *obj);
-void lgameobject_catch_event(lgameobject_t *obj, const sfEvent *event);
-int lgameobject_add_child(lgameobject_t *obj, lgameobject_t *new_obj);
-void lgameobject_set_position(lgameobject_t *obj, sfVector2f position);
-sfVector2f lgameobject_get_position(lgameobject_t *obj);
-void lgameobject_move(lgameobject_t *obj, sfVector2f offset);
+lgameobject_t *lgameobject_empty(const char *name) __THROW __nonnull((1));
+int lgameobject_create(lgameobject_t *obj, const char *name) __THROW __nonnull((1, 2));
+void lgameobject_destroy(lgameobject_t *obj) __THROW __nonnull((1));
+void lgameobject_start(lgameobject_t *obj) __THROW __nonnull((1));
+void lgameobject_update(lgameobject_t *obj) __THROW __nonnull((1));
+void lgameobject_display(lgameobject_t *obj) __THROW __nonnull((1));
+void lgameobject_catch_event(lgameobject_t *obj, const sfEvent *event) __THROW __nonnull((1, 2));
+int lgameobject_add_child(lgameobject_t *obj, lgameobject_t *new_obj) __THROW __nonnull((1, 2));
+void lgameobject_set_position(lgameobject_t *obj, sfVector2f position) __THROW __nonnull((1));
+sfVector2f lgameobject_get_position(lgameobject_t *obj) __THROW __nonnull((1));
+void lgameobject_move(lgameobject_t *obj, sfVector2f offset) __THROW __nonnull((1));
 
 #endif /* !_LGAMEOBJECT_H_ */

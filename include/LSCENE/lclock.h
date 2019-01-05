@@ -3,6 +3,7 @@
 
 # include <stdint.h>
 # include <SFML/System/Clock.h>
+# include <sys/cdefs.h>
 
 typedef struct lsf_clock_s
 {
@@ -15,16 +16,16 @@ typedef struct lsf_clock_s
   uint32_t fps;
 } lclock_t;
 
-int lclock_create(lclock_t *clock, uint32_t frame_per_sec);
-void lclock_reset(lclock_t *clock);
-void lclock_destroy(lclock_t *clock);
+int lclock_create(lclock_t *clock, uint32_t frame_per_sec) __THROW __nonnull((1));
+void lclock_reset(lclock_t *clock) __THROW __nonnull((1));
+void lclock_destroy(lclock_t *clock) __THROW __nonnull((1));
 
-void lclock_timescale(lclock_t *clock, double scale);
-void lclock_framerate(lclock_t *clock, uint32_t frame_per_sec);
-double lclock_time(lclock_t *clock);
-double lclock_rtime(lclock_t *clock);
-double lclock_delta_time(lclock_t *clock);
-void lclock_lap(lclock_t *clock);
-void lclock_wait_delta(lclock_t *clock);
+void lclock_timescale(lclock_t *clock, double scale) __THROW __nonnull((1));
+void lclock_framerate(lclock_t *clock, uint32_t frame_per_sec) __THROW __nonnull((1));
+double lclock_time(lclock_t *clock) __THROW __nonnull((1));
+double lclock_rtime(lclock_t *clock) __THROW __nonnull((1));
+double lclock_delta_time(lclock_t *clock) __THROW __nonnull((1));
+void lclock_lap(lclock_t *clock) __THROW __nonnull((1));
+void lclock_wait_delta(lclock_t *clock) __THROW __nonnull((1));
 
 #endif /* !LCLOCK_H_ */
