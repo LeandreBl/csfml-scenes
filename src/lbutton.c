@@ -11,16 +11,16 @@ static void update(lgameobject_t *obj)
 
   rect = sfSprite_getGlobalBounds(obj->sprite);
   if (button->pressed) {
-    button->pressed = sfFloatRect_contains(&rect, button->at.x, button->at.y);
+    button->pressed = sfFloatRect_contains(&rect, button->click_pos.x, button->click_pos.y);
     if (button->pressed) {
       sfSprite_setColor(obj->sprite, sfColor_fromRGB(110, 110, 110));
-      button->tocall(obj);
+      button->tocall(button);
     }
     else
       button->moved = false;
   }
   else if (button->moved) {
-    button->moved = sfFloatRect_contains(&rect, button->at.x, button->at.y);
+    button->moved = sfFloatRect_contains(&rect, button->move_pos.x, button->move_pos.y);
     if (button->moved)
       sfSprite_setColor(obj->sprite, sfColor_fromRGB(170, 170, 170));
   }
@@ -34,20 +34,20 @@ static void catch_event(lgameobject_t *obj, const sfEvent *event)
 
   if (event->type == sfEvtMouseMoved) {
     button->moved = true;
-    button->at = vector2i(event->mouseMove.x, event->mouseMove.y);
+    button->move_pos = vector2f(event->mouseMove.x, event->mouseMove.y);
   }
   else if (event->type == sfEvtMouseButtonReleased) {
     button->pressed = false;
-    button->at = vector2i(event->mouseButton.x, event->mouseButton.y);
+    button->click_pos = vector2f(event->mouseButton.x, event->mouseButton.y);
   }
   else if (event->type == sfEvtMouseButtonPressed) {
     button->pressed = true;
-    button->at = vector2i(event->mouseButton.x, event->mouseButton.y);
+    button->click_pos = vector2f(event->mouseButton.x, event->mouseButton.y);
   }
 }
 
 lgameobject_t *lbutton_create(sfVector2f position, const sfTexture *texture,
-                              void (*caller)(lgameobject_t *))
+                              void (*caller)(lbutton_t *))
 {
   lbutton_t *button = calloc(1, sizeof(*button));
 
