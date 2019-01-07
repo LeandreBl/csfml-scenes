@@ -1,8 +1,8 @@
 #include <stdlib.h>
 
-#include "LSCENE/lvector.h"
-#include "LSCENE/lscene.h"
-#include "LSCENE/lbutton.h"
+#include "lvector.h"
+#include "lscene.h"
+#include "lbutton.h"
 
 static void update(lgameobject_t *obj)
 {
