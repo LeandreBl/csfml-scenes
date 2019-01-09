@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "lgameobject_types.h"
 #include "lvector.h"
 #include "lscene.h"
 #include "lbutton.h"

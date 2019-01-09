@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "lgameobject_types.h"
 #include "ltextbox.h"
 
 void ltextbox_set_font(lgameobject_t *textbox, const sfFont *font)
