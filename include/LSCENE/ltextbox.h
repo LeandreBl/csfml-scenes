@@ -1,9 +1,10 @@
 #ifndef LTEXT_BOX_H_
 # define LTEXT_BOX_H_
 
-# include <LSCENE/lscene.h>
-# include <lstr.h>
 # include <sys/cdefs.h>
+# include <LSCENE/lscene.h>
+# include <LSCENE/lgameobject.h>
+# include <lstr.h>
 
 typedef struct lsftextbox_s {
   lgameobject_t base_object;

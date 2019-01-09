@@ -18,7 +18,7 @@ static void catch_event(lgameobject_t *object, const sfEvent *event)
   }
   else if (event->type == sfEvtMouseButtonReleased)
     navbar->clicked = false;
-  else if (event->type == sfEvtMouseButtonPressed) {
+  else {
     navbar->clicked = sfFloatRect_contains(&rect, event->mouseButton.x, event->mouseButton.y);
     navbar->hoffset = event->mouseButton.y - lgameobject_get_position(object).y;
     navbar->ymouse = event->mouseButton.y;
@@ -76,8 +76,13 @@ lgameobject_t *lhnavbar_create(sfVector2f position, sfVector2f size, float range
   object->color = sfWhite;
   object->base_object.type = LHNAVBAR_TYPE;
   lhnavbar_set_color(&object->base_object, sfWhite);
-  sfRectangleShape_setSize(object->cursor, vector2f(size.x - object->offset, size.y - object->offset));
-  lgameobject_set_position(&object->base_object, vector2f(position.x + object->offset / 2, object->up + object->offset / 2));
+  lgameobject_subscribe(&object->base_object, sfEvtMouseButtonPressed);
+  lgameobject_subscribe(&object->base_object, sfEvtMouseButtonReleased);
+  lgameobject_subscribe(&object->base_object, sfEvtMouseMoved);
+  sfRectangleShape_setSize(object->cursor,
+                           vector2f(size.x - object->offset, size.y - object->offset));
+  lgameobject_set_position(&object->base_object, vector2f(position.x + object->offset / 2,
+                                                          object->up + object->offset / 2));
   sfRectangleShape_setSize(object->background, vector2f(object->size.x, range));
   sfRectangleShape_setPosition(object->background, position);
   object->base_object.update = &update;
@@ -99,7 +104,8 @@ void lhnavbar_set_range(lgameobject_t *object, float range)
   lhnavbar_t *navbar = (lhnavbar_t *)object;
 
   navbar->range = range;
-  sfRectangleShape_setSize(navbar->background, vector2f(sfRectangleShape_getSize(navbar->background).x, range));
+  sfRectangleShape_setSize(navbar->background,
+                           vector2f(sfRectangleShape_getSize(navbar->background).x, range));
 }
 
 void lhnavbar_set_color(lgameobject_t *object, sfColor color)
@@ -107,5 +113,7 @@ void lhnavbar_set_color(lgameobject_t *object, sfColor color)
   lhnavbar_t *navbar = (lhnavbar_t *)object;
 
   navbar->color = color;
-  sfRectangleShape_setFillColor(navbar->background, color_div(navbar->color, 3));
+  color = color_div(color, 1.5);
+  color.a = 100;
+  sfRectangleShape_setFillColor(navbar->background, color);
 }

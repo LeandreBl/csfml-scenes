@@ -52,12 +52,14 @@ lgameobject_t *lbutton_create(sfVector2f position, const sfTexture *texture,
 {
   lbutton_t *button = calloc(1, sizeof(*button));
 
-  if (button == NULL
-      || lgameobject_create(&button->base_object, "button") == -1)
+  if (button == NULL || lgameobject_create(&button->base_object, "button") == -1)
     return (NULL);
   button->tocall = caller;
   lgameobject_set_position(&button->base_object, position);
   lbutton_set_texture(&button->base_object, texture);
+  lgameobject_subscribe(&button->base_object, sfEvtMouseButtonPressed);
+  lgameobject_subscribe(&button->base_object, sfEvtMouseButtonReleased);
+  lgameobject_subscribe(&button->base_object, sfEvtMouseMoved);
   button->base_object.type = LBUTTON_TYPE;
   button->base_object.catch_event = &catch_event;
   button->base_object.update = &update;

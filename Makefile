@@ -15,7 +15,7 @@ LIBS		= -lcsfml-graphics -lcsfml-window -lcsfml-audio -lcsfml-system -lcsfml-net
 LIBS		+= -llgtab -llstr
 
 SRCS		= src/scene.c
-SRCS		+= src/lnavbar.c
+SRCS		+= src/lhnavbar.c
 SRCS		+= src/lcolor.c
 SRCS		+= src/lbutton.c
 SRCS		+= src/vector.c

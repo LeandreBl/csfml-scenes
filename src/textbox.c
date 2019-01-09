@@ -45,8 +45,7 @@ static void update(lgameobject_t *textbox)
   if (obj->string.len == 0 && !obj->selected) {
     sfText_setString(obj->render_text, obj->placeholder.i);
     sfText_setFillColor(obj->render_text,
-                        sfColor_fromRGB(obj->color.r / 2, obj->color.g / 2,
-                                        obj->color.b / 2));
+                        sfColor_fromRGB(obj->color.r / 2, obj->color.g / 2, obj->color.b / 2));
   }
   else {
     ltextbox_set_color(textbox, obj->color);
@@ -74,8 +73,7 @@ static void catch_event(lgameobject_t *textbox, const sfEvent *event)
     }
   }
   else if (event->type == sfEvtMouseButtonReleased
-           && sfFloatRect_contains(&rect, event->mouseButton.x,
-                                   event->mouseButton.y)
+           && sfFloatRect_contains(&rect, event->mouseButton.x, event->mouseButton.y)
            && obj->clicked == true)
     obj->selected = true;
   if (obj->selected == true) {
@@ -131,9 +129,13 @@ lgameobject_t *ltextbox_create(sfVector2f position, const char *placeholder,
   if (obj->render_text == NULL)
     return (NULL);
   obj->color = sfBlack;
-  if (lstr_create(&obj->string, "") == -1
-      || lstr_create(&obj->placeholder, placeholder) == -1)
+  if (lstr_create(&obj->string, "") == -1 || lstr_create(&obj->placeholder, placeholder) == -1)
     return (NULL);
+  lgameobject_subscribe(&obj->base_object, sfEvtMouseMoved);
+  lgameobject_subscribe(&obj->base_object, sfEvtMouseButtonPressed);
+  lgameobject_subscribe(&obj->base_object, sfEvtMouseButtonReleased);
+  lgameobject_subscribe(&obj->base_object, sfEvtKeyPressed);
+  lgameobject_subscribe(&obj->base_object, sfEvtTextEntered);
   ltextbox_set_position((lgameobject_t *)obj, position);
   ltextbox_set_character_size((lgameobject_t *)obj, character_size);
   ltextbox_set_color((lgameobject_t *)obj, color);

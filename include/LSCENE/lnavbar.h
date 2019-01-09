@@ -4,6 +4,7 @@
 # include <SFML/Graphics.h>
 # include <stdbool.h>
 # include <sys/cdefs.h>
+# include <LSCENE/lgameobject.h>
 
 typedef struct lsfhnavbar_s {
   lgameobject_t base_object;

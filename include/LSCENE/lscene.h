@@ -3,7 +3,6 @@
 
 # include <SFML/Graphics.h>
 # include <LSCENE/lclock.h>
-# include <LSCENE/lgameobject.h>
 # include <lgtab.h>
 # include <stdbool.h>
 # include <stdio.h>
@@ -26,12 +25,15 @@ typedef struct lsf_scene_s
   gtab_t objects;
   gtab_t to_add;
   gtab_t to_remove;
-  gtab_t layered_objects[LSF_MAXIMUM_LAYERS];
   gtab_t fonts;
   gtab_t images;
   gtab_t textures;
+  gtab_t layered_objects[LSF_MAXIMUM_LAYERS];
+  gtab_t subscribe_events[sfEvtCount + 1];
 	bool running;
 } lscene_t;
+
+typedef struct lsfgameobject_s lgameobject_t;
 
 int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec) __THROW __nonnull((1, 2));
 void lscene_run(lscene_t *scene) __THROW __nonnull((1));

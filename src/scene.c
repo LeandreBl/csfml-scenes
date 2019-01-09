@@ -2,6 +2,7 @@
 #include <lbl-libc.h>
 #include <string.h>
 
+#include "lgameobject.h"
 #include "lscene.h"
 
 int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec)
@@ -9,27 +10,29 @@ int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec)
   size_t count;
   const sfVideoMode *modes = sfVideoMode_getFullscreenModes(&count);
 
-  scene->window =
-          sfRenderWindow_create(modes[0], name, sfClose | sfFullscreen, NULL);
+  scene->window = sfRenderWindow_create(modes[0], name, sfClose | sfFullscreen, NULL);
   if (scene->window == NULL || gtab_create(&scene->objects, 20) == -1
-      || gtab_create(&scene->to_remove, 20) == -1
-      || gtab_create(&scene->to_add, 20) == -1
-      || gtab_create(&scene->fonts, 5) == -1
-      || gtab_create(&scene->images, 5) == -1
+      || gtab_create(&scene->to_remove, 20) == -1 || gtab_create(&scene->to_add, 20) == -1
+      || gtab_create(&scene->fonts, 5) == -1 || gtab_create(&scene->images, 5) == -1
       || gtab_create(&scene->textures, 10) == -1) {
     sfRenderWindow_destroy(scene->window);
     return (-1);
   }
-  if (scene->window == NULL
-      || lclock_create(&scene->clock, frame_per_sec) == -1) {
+  if (scene->window == NULL || lclock_create(&scene->clock, frame_per_sec) == -1) {
     lscene_destroy(scene);
     return (-1);
   }
-  for (size_t i = 0; i < LSF_MAXIMUM_LAYERS; ++i)
+  for (size_t i = 0; i < sizeof(scene->layered_objects) / sizeof(*scene->layered_objects); ++i)
     if (gtab_create(&scene->layered_objects[i], 5) == -1) {
       lscene_destroy(scene);
       return (-1);
     }
+  for (size_t i = 0; i < sizeof(scene->subscribe_events) / sizeof(*scene->subscribe_events); ++i) {
+    if (gtab_create(&scene->subscribe_events[i], 5) == -1) {
+      lscene_destroy(scene);
+      return (-1);
+    }
+  }
   sfRenderWindow_setFramerateLimit(scene->window, frame_per_sec);
   return (0);
 }
@@ -61,8 +64,10 @@ void lscene_destroy(lscene_t *scene)
   gtab_destroy(&scene->objects, (void (*)(void *))lgameobject_destroy);
   gtab_destroy(&scene->to_add, (void (*)(void *))lgameobject_destroy);
   gtab_destroy(&scene->to_remove, (void (*)(void *))lgameobject_destroy);
-  for (size_t i = 0; i < LSF_MAXIMUM_LAYERS; ++i)
+  for (size_t i = 0; i < sizeof(scene->layered_objects) / sizeof(*scene->layered_objects); ++i)
     gtab_destroy(&scene->layered_objects[i], NULL);
+  for (size_t i = 0; i < sizeof(scene->subscribe_events) / sizeof(*scene->subscribe_events); ++i)
+    gtab_destroy(&scene->subscribe_events[i], NULL);
   gtab_destroy(&scene->fonts, (void (*)(void *))asset_destroy);
   gtab_destroy(&scene->images, (void (*)(void *))asset_destroy);
   gtab_destroy(&scene->textures, (void (*)(void *))asset_destroy);
@@ -82,8 +87,7 @@ int lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj)
   return (0);
 }
 
-int lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab,
-                                const char *name)
+int lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *name)
 {
   lgameobject_t *obj;
 
@@ -170,6 +174,7 @@ static void update_display_objects(gtab_t *vector)
 static int deploy_add_objects(lscene_t *scene)
 {
   lgameobject_t *go;
+  sfEventType type;
 
   for (size_t i = 0; i < scene->to_add.len; ++i) {
     go = scene->to_add.i[i];
@@ -180,6 +185,11 @@ static int deploy_add_objects(lscene_t *scene)
   for (size_t i = 0; i < scene->to_add.len; ++i) {
     go = scene->to_add.i[i];
     go->scene = scene;
+    for (size_t i = 0; i < go->subscribed_events.len; ++i) {
+      type = (long)go->subscribed_events.i[i];
+      if (gtab_append(&scene->subscribe_events[type], go) == -1)
+        return (-1);
+    }
     lgameobject_start(go);
   }
   gtab_clear(&scene->to_add, NULL);
@@ -198,20 +208,25 @@ static void delete_standby_objects(lscene_t *scene)
   gtab_clear(&scene->to_remove, NULL);
 }
 
-void lscene_run(lscene_t *scene)
+static void call_subscribed_events(lscene_t *scene)
 {
   sfEvent event;
   lgameobject_t *obj;
 
+  while (sfRenderWindow_pollEvent(scene->window, &event)) {
+    for (size_t i = 0; i < scene->subscribe_events[event.type].len; ++i) {
+      obj = scene->subscribe_events[event.type].i[i];
+      lgameobject_catch_event(obj, &event);
+    }
+  }
+}
+
+void lscene_run(lscene_t *scene)
+{
   scene->running = true;
   lclock_reset(&scene->clock);
   while (scene->running) {
-    while (sfRenderWindow_pollEvent(scene->window, &event)) {
-      for (size_t i = 0; i < scene->objects.len; ++i) {
-        obj = scene->objects.i[i];
-        lgameobject_catch_event(obj, &event);
-      }
-    }
+    call_subscribed_events(scene);
     sfRenderWindow_clear(scene->window, sfBlack);
     if (deploy_add_objects(scene) == -1)
       fprintf(stderr, "Error: Not enough memory, can't add new object\n");

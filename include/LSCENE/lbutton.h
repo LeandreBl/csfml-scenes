@@ -2,8 +2,8 @@
 # define LBUTTON_H_
 
 # include <stdbool.h>
-# include <LSCENE/lgameobject.h>
 # include <sys/cdefs.h>
+# include <LSCENE/lgameobject.h>
 
 typedef struct lsfbutton_s {
   lgameobject_t base_object;
