@@ -98,6 +98,11 @@ int lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *n
     if (strcmp(obj->name, name) == 0 && gtab_append(empty_tab, obj) == -1)
       return (-1);
   }
+  for (size_t i = 0; i < scene->to_add.len; ++i) {
+    obj = scene->to_add.i[i];
+    if (strcmp(obj->name, name) == 0 && gtab_append(empty_tab, obj) == -1)
+      return (-1);
+  }
   return (0);
 }
 
@@ -112,6 +117,11 @@ int lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag)
     if (obj->tag == tag && gtab_append(empty_tab, obj) == -1)
       return (-1);
   }
+  for (size_t i = 0; i < scene->to_add.len; ++i) {
+    obj = scene->to_add.i[i];
+    if (obj->tag == tag && gtab_append(empty_tab, obj) == -1)
+      return (-1);
+  }
   return (0);
 }
 
@@ -123,6 +133,11 @@ int lscene_get_objects_by_type(lscene_t *scene, gtab_t *empty_tab, enum lgameobj
     return (-1);
   for (size_t i = 0; i < scene->objects.len; ++i) {
     obj = scene->objects.i[i];
+    if (obj->type == type && gtab_append(empty_tab, obj) == -1)
+      return (-1);
+  }
+  for (size_t i = 0; i < scene->to_add.len; ++i) {
+    obj = scene->to_add.i[i];
     if (obj->type == type && gtab_append(empty_tab, obj) == -1)
       return (-1);
   }
