@@ -63,7 +63,7 @@ void lscene_destroy(lscene_t *scene)
   lclock_destroy(&scene->clock);
   gtab_destroy(&scene->objects, (void (*)(void *))lgameobject_destroy);
   gtab_destroy(&scene->to_add, (void (*)(void *))lgameobject_destroy);
-  gtab_destroy(&scene->to_remove, (void (*)(void *))lgameobject_destroy);
+  gtab_destroy(&scene->to_remove, NULL);
   for (size_t i = 0; i < sizeof(scene->layered_objects) / sizeof(*scene->layered_objects); ++i)
     gtab_destroy(&scene->layered_objects[i], NULL);
   for (size_t i = 0; i < sizeof(scene->subscribe_events) / sizeof(*scene->subscribe_events); ++i)
@@ -176,23 +176,20 @@ static int deploy_add_objects(lscene_t *scene)
   lgameobject_t *go;
   sfEventType type;
 
-  for (size_t i = 0; i < scene->to_add.len; ++i) {
-    go = scene->to_add.i[i];
+  while (scene->to_add.len > 0) {
+    go = scene->to_add.i[0];
+    go->scene = scene;
     if (gtab_append(&scene->objects, go) == -1
         || gtab_append(&scene->layered_objects[go->layer], go) == -1)
       return (-1);
-  }
-  for (size_t i = 0; i < scene->to_add.len; ++i) {
-    go = scene->to_add.i[i];
-    go->scene = scene;
     for (size_t i = 0; i < go->subscribed_events.len; ++i) {
       type = (long)go->subscribed_events.i[i];
       if (gtab_append(&scene->subscribe_events[type], go) == -1)
         return (-1);
     }
     lgameobject_start(go);
+    gtab_remove_at(&scene->to_add, 0, NULL);
   }
-  gtab_clear(&scene->to_add, NULL);
   return (0);
 }
 
