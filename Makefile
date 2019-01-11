@@ -13,6 +13,7 @@ ARCHIVER	= ar
 
 LIBS		= -lcsfml-graphics -lcsfml-window -lcsfml-audio -lcsfml-system -lcsfml-network
 LIBS		+= -llgtab -llstr
+LIBS		+= -lm
 
 SRCS		= src/scene.c
 SRCS		+= src/lhnavbar.c
