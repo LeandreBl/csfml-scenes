@@ -33,8 +33,8 @@ lgameobject_t *lgameobject_empty(const char *name)
 int lgameobject_create(lgameobject_t *new_obj, const char *name)
 {
   new_obj->name = strdup(name);
-  if (new_obj->name == NULL || gtab_create(&new_obj->childs, 0) == -1
-      || gtab_create(&new_obj->subscribed_events, 0) == -1)
+  if (new_obj->name == NULL || gtab_create(&new_obj->childs, 0, NULL) == -1
+      || gtab_create(&new_obj->subscribed_events, 0, NULL) == -1)
     return (-1);
   new_obj->sprite = sfSprite_create();
   new_obj->tag = 0;
@@ -60,11 +60,11 @@ void lgameobject_destroy(lgameobject_t *obj)
     child->parent = NULL;
   }
   if (obj->parent != NULL)
-    gtab_remove(&obj->parent->childs, obj, NULL);
-  gtab_destroy(&obj->childs, NULL);
+    gtab_remove(&obj->parent->childs, obj);
+  gtab_destroy(&obj->childs);
   for (size_t i = 0; i < obj->subscribed_events.len; ++i)
     lgameobject_unsubscribe(obj, (long)obj->subscribed_events.i[i]);
-  gtab_destroy(&obj->subscribed_events, NULL);
+  gtab_destroy(&obj->subscribed_events);
   free(obj->name);
   free(obj);
 }
@@ -119,6 +119,6 @@ int lgameobject_subscribe(lgameobject_t *object, sfEventType type)
 
 void lgameobject_unsubscribe(lgameobject_t *object, sfEventType type)
 {
-  gtab_remove(&object->subscribed_events, (void *)(long)type, NULL);
-  gtab_remove(&object->scene->subscribe_events[type], object, NULL);
+  gtab_remove(&object->subscribed_events, (void *)(long)type);
+  gtab_remove(&object->scene->subscribe_events[type], object);
 }
