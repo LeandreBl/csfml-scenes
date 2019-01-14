@@ -2,8 +2,8 @@
 #include <lbl-libc.h>
 #include <string.h>
 
-#include "lgameobject.h"
-#include "lscene.h"
+#include "LSCENE/lgameobject.h"
+#include "LSCENE/lscene.h"
 
 static void asset_destroy(lasset_t *asset)
 {

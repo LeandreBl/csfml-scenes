@@ -5,8 +5,8 @@
 # include <SFML/Window/Event.h>
 # include <SFML/Graphics/Sprite.h>
 # include <sys/cdefs.h>
-# include <LSCENE/lgameobject_types.h>
 # include <lgtab.h>
+# include <LSCENE/lgameobject_types.h>
 
 struct lsf_scene_s;
 

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
-#include "lgameobject_types.h"
-#include "ltextbox.h"
+#include "LSCENE/lgameobject_types.h"
+#include "LSCENE/ltextbox.h"
 
 void ltextbox_set_font(lgameobject_t *textbox, const sfFont *font)
 {

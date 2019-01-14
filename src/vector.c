@@ -1,4 +1,4 @@
-#include "lvector.h"
+#include "LSCENE/lvector.h"
 
 sfVector2f vector2f(float x, float y)
 {

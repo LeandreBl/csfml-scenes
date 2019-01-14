@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lgameobject.h"
-#include "lscene.h"
+#include "LSCENE/lgameobject.h"
+#include "LSCENE/lscene.h"
 
 static void default_start(__attribute__((unused)) lgameobject_t *object)
 {

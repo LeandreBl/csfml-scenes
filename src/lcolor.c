@@ -1,4 +1,4 @@
-#include "lcolor.h"
+#include "LSCENE/lcolor.h"
 
 sfColor color_div(sfColor color, float coef)
 {

@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <SFML/System.h>
 
-#include "lclock.h"
+#include "LSCENE/lclock.h"
 
 int lclock_create(lclock_t *clock, uint32_t frame_per_sec)
 {

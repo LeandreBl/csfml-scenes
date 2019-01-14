@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "lgameobject_types.h"
-#include "lcolor.h"
-#include "lvector.h"
-#include "lscene.h"
-#include "lnavbar.h"
+#include "LSCENE/lgameobject_types.h"
+#include "LSCENE/lcolor.h"
+#include "LSCENE/lvector.h"
+#include "LSCENE/lscene.h"
+#include "LSCENE/lnavbar.h"
 
 static void catch_event(lgameobject_t *object, const sfEvent *event)
 {

@@ -1,9 +1,9 @@
 #include <stdlib.h>
 
-#include "lgameobject_types.h"
-#include "lvector.h"
-#include "lscene.h"
-#include "lbutton.h"
+#include "LSCENE/lgameobject_types.h"
+#include "LSCENE/lvector.h"
+#include "LSCENE/lscene.h"
+#include "LSCENE/lbutton.h"
 
 static void update(lgameobject_t *obj)
 {
