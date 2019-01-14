@@ -91,7 +91,8 @@ void lgameobject_display(lgameobject_t *obj)
 
 int lgameobject_add_child(lgameobject_t *obj, lgameobject_t *new_obj)
 {
-  if (lscene_add_gameobject(obj->scene, new_obj) == -1 || gtab_append(&obj->childs, new_obj) == -1)
+  if (lscene_add_gameobject(obj->scene, new_obj) == -1
+      || gtab_append(&obj->childs, new_obj) == -1)
     return (-1);
   new_obj->parent = obj;
   return (0);

@@ -2,7 +2,8 @@
 
 #include "LSCENE/ltransform.h"
 
-void ltransform_create(ltransform_t *transform, sfVector2f position, sfVector2f movement)
+void ltransform_create(ltransform_t *transform, sfVector2f position,
+                       sfVector2f movement)
 {
   transform->position = position;
   transform->movement = movement;

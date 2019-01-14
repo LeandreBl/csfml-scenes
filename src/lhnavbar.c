@@ -13,13 +13,15 @@ static void catch_event(lgameobject_t *object, const sfEvent *event)
   sfFloatRect rect = sfRectangleShape_getGlobalBounds(navbar->cursor);
 
   if (event->type == sfEvtMouseMoved) {
-    navbar->moved = sfFloatRect_contains(&rect, event->mouseMove.x, event->mouseMove.y);
+    navbar->moved =
+            sfFloatRect_contains(&rect, event->mouseMove.x, event->mouseMove.y);
     navbar->ymouse = event->mouseMove.y;
   }
   else if (event->type == sfEvtMouseButtonReleased)
     navbar->clicked = false;
   else {
-    navbar->clicked = sfFloatRect_contains(&rect, event->mouseButton.x, event->mouseButton.y);
+    navbar->clicked = sfFloatRect_contains(&rect, event->mouseButton.x,
+                                           event->mouseButton.y);
     navbar->hoffset = event->mouseButton.y - lgameobject_get_position(object).y;
     navbar->ymouse = event->mouseButton.y;
   }
@@ -31,22 +33,29 @@ static void update(lgameobject_t *object)
   sfVector2f position;
 
   if (navbar->clicked) {
-    sfRectangleShape_setFillColor(navbar->cursor, color_div(navbar->color, 1.5));
+    sfRectangleShape_setFillColor(navbar->cursor,
+                                  color_div(navbar->color, 1.5));
     position = lgameobject_get_position(object);
     position.y = navbar->ymouse - navbar->hoffset;
     if (position.y <= navbar->up + navbar->offset / 2)
       position.y = navbar->up + navbar->offset / 2;
-    else if (position.y >= navbar->range + navbar->up - navbar->size.y + navbar->offset / 2)
-      position.y = navbar->range + navbar->up - navbar->size.y + navbar->offset / 2;
+    else if (position.y >= navbar->range + navbar->up - navbar->size.y
+                                   + navbar->offset / 2)
+      position.y =
+              navbar->range + navbar->up - navbar->size.y + navbar->offset / 2;
     lgameobject_set_position(object, position);
   }
   else if (navbar->moved)
-    sfRectangleShape_setFillColor(navbar->cursor, color_div(navbar->color, 1.25));
+    sfRectangleShape_setFillColor(navbar->cursor,
+                                  color_div(navbar->color, 1.25));
   else
     sfRectangleShape_setFillColor(navbar->cursor, navbar->color);
-  sfRectangleShape_setPosition(navbar->cursor, sfSprite_getPosition(object->sprite));
-  sfRenderWindow_drawRectangleShape(object->scene->window, navbar->background, NULL);
-  sfRenderWindow_drawRectangleShape(object->scene->window, navbar->cursor, NULL);
+  sfRectangleShape_setPosition(navbar->cursor,
+                               sfSprite_getPosition(object->sprite));
+  sfRenderWindow_drawRectangleShape(object->scene->window, navbar->background,
+                                    NULL);
+  sfRenderWindow_drawRectangleShape(object->scene->window, navbar->cursor,
+                                    NULL);
 }
 
 static void lhnavbar_destroy(lgameobject_t *object)
@@ -57,11 +66,13 @@ static void lhnavbar_destroy(lgameobject_t *object)
   sfRectangleShape_destroy(navbar->background);
 }
 
-lgameobject_t *lhnavbar_create(sfVector2f position, sfVector2f size, float range)
+lgameobject_t *lhnavbar_create(sfVector2f position, sfVector2f size,
+                               float range)
 {
   lhnavbar_t *object = calloc(1, sizeof(*object));
 
-  if (object == NULL || lgameobject_create(&object->base_object, "hnavbar") == -1)
+  if (object == NULL
+      || lgameobject_create(&object->base_object, "hnavbar") == -1)
     return (NULL);
   object->cursor = sfRectangleShape_create();
   object->background = sfRectangleShape_create();
@@ -79,10 +90,11 @@ lgameobject_t *lhnavbar_create(sfVector2f position, sfVector2f size, float range
   lgameobject_subscribe(&object->base_object, sfEvtMouseButtonPressed);
   lgameobject_subscribe(&object->base_object, sfEvtMouseButtonReleased);
   lgameobject_subscribe(&object->base_object, sfEvtMouseMoved);
-  sfRectangleShape_setSize(object->cursor,
-                           vector2f(size.x - object->offset, size.y - object->offset));
-  lgameobject_set_position(&object->base_object, vector2f(position.x + object->offset / 2,
-                                                          object->up + object->offset / 2));
+  sfRectangleShape_setSize(object->cursor, vector2f(size.x - object->offset,
+                                                    size.y - object->offset));
+  lgameobject_set_position(&object->base_object,
+                           vector2f(position.x + object->offset / 2,
+                                    object->up + object->offset / 2));
   sfRectangleShape_setSize(object->background, vector2f(object->size.x, range));
   sfRectangleShape_setPosition(object->background, position);
   object->base_object.update = &update;
@@ -96,7 +108,8 @@ float lhnavbar_get_scale(lgameobject_t *object)
   lhnavbar_t *navbar = (lhnavbar_t *)object;
   sfVector2f position = lgameobject_get_position(object);
 
-  return ((position.y - navbar->offset / 2 - navbar->up) / (navbar->range - navbar->size.y));
+  return ((position.y - navbar->offset / 2 - navbar->up)
+          / (navbar->range - navbar->size.y));
 }
 
 void lhnavbar_set_range(lgameobject_t *object, float range)
@@ -104,8 +117,9 @@ void lhnavbar_set_range(lgameobject_t *object, float range)
   lhnavbar_t *navbar = (lhnavbar_t *)object;
 
   navbar->range = range;
-  sfRectangleShape_setSize(navbar->background,
-                           vector2f(sfRectangleShape_getSize(navbar->background).x, range));
+  sfRectangleShape_setSize(
+          navbar->background,
+          vector2f(sfRectangleShape_getSize(navbar->background).x, range));
 }
 
 void lhnavbar_set_color(lgameobject_t *object, sfColor color)
