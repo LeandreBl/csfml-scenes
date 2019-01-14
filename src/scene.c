@@ -245,7 +245,7 @@ void lscene_run(lscene_t *scene)
       fprintf(stderr, "Error: Not enough memory, can't add new object\n");
     delete_standby_objects(scene);
     for (size_t i = 0; i < LSF_MAXIMUM_LAYERS; ++i)
-      update_display_objects(&scene->layered_objects[i]);
+      update_display_objects(&scene->layered_objects[LSF_MAXIMUM_LAYERS - i - 1]);
     sfRenderWindow_display(scene->window);
     lclock_wait_delta(&scene->clock);
   }
