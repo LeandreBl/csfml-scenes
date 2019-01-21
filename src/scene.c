@@ -17,17 +17,14 @@ int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec)
   size_t count;
   const sfVideoMode *modes = sfVideoMode_getFullscreenModes(&count);
 
-  scene->window =
-          sfRenderWindow_create(modes[0], name, sfClose | sfFullscreen, NULL);
+  scene->window = sfRenderWindow_create(modes[0], name, sfClose | sfFullscreen, NULL);
   if (scene->window == NULL
-      || gtab_create(&scene->objects, 20, (void (*)(void *))lgameobject_destroy)
-                 == -1
+      || gtab_create(&scene->objects, 20, (void (*)(void *))lgameobject_destroy) == -1
       || gtab_create(&scene->to_remove, 20, NULL) == -1
       || gtab_create(&scene->to_add, 20, NULL) == -1
       || gtab_create(&scene->fonts, 5, (void (*)(void *))asset_destroy) == -1
       || gtab_create(&scene->images, 5, (void (*)(void *))asset_destroy) == -1
-      || gtab_create(&scene->textures, 10, (void (*)(void *))asset_destroy)
-                 == -1) {
+      || gtab_create(&scene->textures, 10, (void (*)(void *))asset_destroy) == -1) {
     sfRenderWindow_destroy(scene->window);
     return (-1);
   }
@@ -256,8 +253,8 @@ void lscene_run(lscene_t *scene)
   scene->running = true;
   lclock_reset(&scene->clock);
   while (scene->running) {
-    call_subscribed_events(scene);
     sfRenderWindow_clear(scene->window, sfBlack);
+    call_subscribed_events(scene);
     if (deploy_add_objects(scene) == -1)
       fprintf(stderr, "Error: Not enough memory, can't add new object\n");
     delete_standby_objects(scene);
