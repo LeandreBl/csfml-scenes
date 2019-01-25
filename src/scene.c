@@ -262,7 +262,7 @@ void lscene_run(lscene_t *scene)
       update_display_objects(
               &scene->layered_objects[LSF_MAXIMUM_LAYERS - i - 1]);
     sfRenderWindow_display(scene->window);
-    lclock_wait_delta(&scene->clock);
+    lclock_rtime(&scene->clock);
   }
   sfRenderWindow_close(scene->window);
 }
