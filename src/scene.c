@@ -48,7 +48,7 @@ int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec)
       return (-1);
     }
   }
-  sfRenderWindow_setFramerateLimit(scene->window, frame_per_sec);
+  sfRenderWindow_setFramerateLimit(scene->window, frame_per_sec + 1);
   return (0);
 }
 
