@@ -33,10 +33,11 @@ lgameobject_t *lgameobject_empty(const char *name)
 int lgameobject_create(lgameobject_t *new_obj, const char *name)
 {
   new_obj->name = strdup(name);
-  if (new_obj->name == NULL || gtab_create(&new_obj->childs, 0, NULL) == -1
-      || gtab_create(&new_obj->subscribed_events, 0, NULL) == -1)
-    return (-1);
   new_obj->sprite = sfSprite_create();
+  if (new_obj->name == NULL || new_obj->sprite == NULL)
+    return (-1);
+  lvector_create(new_obj->childs, 0, NULL);
+  lvector_create(new_obj->subscribed_events, 0, NULL);
   new_obj->tag = 0;
   new_obj->type = LEMPTY_GAMEOBJECT_TYPE;
   new_obj->layer = 0;
@@ -50,21 +51,17 @@ int lgameobject_create(lgameobject_t *new_obj, const char *name)
 
 void lgameobject_destroy(lgameobject_t *obj)
 {
-  lgameobject_t *child;
-
   sfSprite_destroy(obj->sprite);
   if (obj->destroy != NULL)
     obj->destroy(obj);
-  for (size_t i = 0; i < obj->childs.len; ++i) {
-    child = obj->childs.i[i];
-    child->parent = NULL;
-  }
+  for (size_t i = 0; i < obj->childs.len; ++i)
+    obj->childs.arr[i]->parent = NULL;
   if (obj->parent != NULL)
-    gtab_remove(&obj->parent->childs, obj);
-  gtab_destroy(&obj->childs);
+    lvector_erase_item(obj->parent->childs, obj);
+  lvector_destroy(obj->childs);
   for (size_t i = 0; i < obj->subscribed_events.len; ++i)
-    lgameobject_unsubscribe(obj, (long)obj->subscribed_events.i[i]);
-  gtab_destroy(&obj->subscribed_events);
+    lgameobject_unsubscribe(obj, obj->subscribed_events.arr[i]);
+  lvector_destroy(obj->subscribed_events);
   free(obj->name);
   free(obj);
 }
@@ -89,13 +86,11 @@ void lgameobject_display(lgameobject_t *obj)
   sfRenderWindow_drawSprite(obj->scene->window, obj->sprite, NULL);
 }
 
-int lgameobject_add_child(lgameobject_t *obj, lgameobject_t *new_obj)
+void lgameobject_add_child(lgameobject_t *obj, lgameobject_t *new_obj)
 {
-  if (lscene_add_gameobject(obj->scene, new_obj) == -1
-      || gtab_append(&obj->childs, new_obj) == -1)
-    return (-1);
+  lscene_add_gameobject(obj->scene, new_obj);
+  lvector_push_back(obj->childs, new_obj);
   new_obj->parent = obj;
-  return (0);
 }
 
 void lgameobject_set_position(lgameobject_t *obj, sfVector2f position)
@@ -113,13 +108,13 @@ void lgameobject_move(lgameobject_t *obj, sfVector2f offset)
   sfSprite_move(obj->sprite, offset);
 }
 
-int lgameobject_subscribe(lgameobject_t *object, sfEventType type)
+void lgameobject_subscribe(lgameobject_t *object, sfEventType type)
 {
-  return (gtab_append(&object->subscribed_events, (void *)(long)type));
+  lvector_push_back(object->subscribed_events, type);
 }
 
 void lgameobject_unsubscribe(lgameobject_t *object, sfEventType type)
 {
-  gtab_remove(&object->subscribed_events, (void *)(long)type);
-  gtab_remove(&object->scene->subscribe_events[type], object);
+  lvector_erase_item(object->subscribed_events, type);
+  lvector_erase_item(object->scene->subscribe_events[type], object);
 }

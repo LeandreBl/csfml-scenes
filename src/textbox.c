@@ -45,8 +45,7 @@ static void update(lgameobject_t *textbox)
   if (obj->string.len == 0 && !obj->selected) {
     sfText_setString(obj->render_text, obj->placeholder.i);
     sfText_setFillColor(obj->render_text,
-                        sfColor_fromRGB(obj->color.r / 2, obj->color.g / 2,
-                                        obj->color.b / 2));
+                        sfColor_fromRGB(obj->color.r / 2, obj->color.g / 2, obj->color.b / 2));
   }
   else {
     ltextbox_set_color(textbox, obj->color);
@@ -74,8 +73,7 @@ static void catch_event(lgameobject_t *textbox, const sfEvent *event)
     }
   }
   else if (event->type == sfEvtMouseButtonReleased
-           && sfFloatRect_contains(&rect, event->mouseButton.x,
-                                   event->mouseButton.y)
+           && sfFloatRect_contains(&rect, event->mouseButton.x, event->mouseButton.y)
            && obj->clicked == true)
     obj->selected = true;
   if (obj->selected == true) {
@@ -98,16 +96,12 @@ static void catch_event(lgameobject_t *textbox, const sfEvent *event)
 static void start(lgameobject_t *textbox)
 {
   ltextbox_t *obj = (ltextbox_t *)textbox;
-  lasset_t *font_asset;
 
   if (obj->font == NULL) {
-    if (textbox->scene->fonts.len != 0) {
-      font_asset = textbox->scene->fonts.i[0];
-      ltextbox_set_font(textbox, font_asset->data);
-    }
-    else {
+    if (textbox->scene->fonts.len != 0)
+      ltextbox_set_font(textbox, textbox->scene->fonts.arr[0].data);
+    else
       fprintf(stderr, "Textbox: error: not font set\n");
-    }
   }
 }
 
@@ -131,8 +125,7 @@ lgameobject_t *ltextbox_create(sfVector2f position, const char *placeholder,
   if (obj->render_text == NULL)
     return (NULL);
   obj->color = sfBlack;
-  if (lstr_create(&obj->string, "") == -1
-      || lstr_create(&obj->placeholder, placeholder) == -1)
+  if (lstr_create(&obj->string, "") == -1 || lstr_create(&obj->placeholder, placeholder) == -1)
     return (NULL);
   lgameobject_subscribe(&obj->base_object, sfEvtMouseMoved);
   lgameobject_subscribe(&obj->base_object, sfEvtMouseButtonPressed);

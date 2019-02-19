@@ -7,6 +7,7 @@
 # include <stdbool.h>
 # include <stdio.h>
 # include <sys/cdefs.h>
+# include <lvector.h>
 
 # include <LSCENE/lgameobject_types.h>
 
@@ -18,30 +19,30 @@ typedef struct lsfasset_s {
   void (* destructor)(void *);
 } lasset_t;
 
+typedef struct lsfgameobject_s lgameobject_t;
+
 typedef struct lsf_scene_s
 {
   sfRenderWindow *window;
   lclock_t clock;
-  gtab_t objects;
-  gtab_t to_add;
-  gtab_t to_remove;
-  gtab_t fonts;
-  gtab_t images;
-  gtab_t textures;
-  gtab_t layered_objects[LSF_MAXIMUM_LAYERS];
-  gtab_t subscribe_events[sfEvtCount + 1];
+  lvector(lgameobject_t *) objects;
+  lvector(lgameobject_t *) to_add;
+  lvector(lgameobject_t *) to_remove;
+  lvector(lasset_t) fonts;
+  lvector(lasset_t) images;
+  lvector(lasset_t) textures;
+  lvector(lgameobject_t *) layered_objects[LSF_MAXIMUM_LAYERS];
+  lvector(lgameobject_t *) subscribe_events[sfEvtCount + 1];
 	bool running;
 } lscene_t;
-
-typedef struct lsfgameobject_s lgameobject_t;
 
 int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec) __THROW __nonnull((1, 2));
 void lscene_run(lscene_t *scene) __THROW __nonnull((1));
 void lscene_close(lscene_t *scene) __THROW __nonnull((1));
 void lscene_destroy(lscene_t *scene) __THROW __nonnull((1));
 
-int lscene_add_gameobject(lscene_t *scene, lgameobject_t *new_obj) __THROW __nonnull((1, 2));
-int lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj) __THROW __nonnull((1, 2));
+void lscene_add_gameobject(lscene_t *scene, lgameobject_t *new_obj) __THROW __nonnull((1, 2));
+void lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj) __THROW __nonnull((1, 2));
 
 int lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *name) __THROW __nonnull((1, 2, 3));
 int lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag) __THROW __nonnull((1, 2));

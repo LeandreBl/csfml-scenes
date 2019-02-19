@@ -12,8 +12,7 @@ static void update(lgameobject_t *obj)
 
   rect = sfSprite_getGlobalBounds(obj->sprite);
   if (button->pressed) {
-    button->pressed = sfFloatRect_contains(&rect, button->click_pos.x,
-                                           button->click_pos.y);
+    button->pressed = sfFloatRect_contains(&rect, button->click_pos.x, button->click_pos.y);
     if (button->pressed) {
       sfSprite_setColor(obj->sprite, sfColor_fromRGB(110, 110, 110));
       button->tocall(button);
@@ -22,8 +21,7 @@ static void update(lgameobject_t *obj)
       button->moved = false;
   }
   else if (button->moved) {
-    button->moved =
-            sfFloatRect_contains(&rect, button->move_pos.x, button->move_pos.y);
+    button->moved = sfFloatRect_contains(&rect, button->move_pos.x, button->move_pos.y);
     if (button->moved)
       sfSprite_setColor(obj->sprite, sfColor_fromRGB(170, 170, 170));
   }
@@ -54,8 +52,7 @@ lgameobject_t *lbutton_create(sfVector2f position, const sfTexture *texture,
 {
   lbutton_t *button = calloc(1, sizeof(*button));
 
-  if (button == NULL
-      || lgameobject_create(&button->base_object, "button") == -1)
+  if (button == NULL || lgameobject_create(&button->base_object, "button") == -1)
     return (NULL);
   button->tocall = caller;
   lgameobject_set_position(&button->base_object, position);

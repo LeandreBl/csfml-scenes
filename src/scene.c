@@ -9,7 +9,11 @@ static void asset_destroy(lasset_t *asset)
 {
   free(asset->name);
   asset->destructor(asset->data);
-  free(asset);
+}
+
+static void lgameobject_ptr_destroy(lgameobject_t **go)
+{
+  lgameobject_destroy(*go);
 }
 
 int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec)
@@ -18,103 +22,74 @@ int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec)
   const sfVideoMode *modes = sfVideoMode_getFullscreenModes(&count);
 
   scene->window = sfRenderWindow_create(modes[0], name, sfClose | sfFullscreen, NULL);
-  if (scene->window == NULL
-      || gtab_create(&scene->objects, 20, (void (*)(void *))lgameobject_destroy) == -1
-      || gtab_create(&scene->to_remove, 20, NULL) == -1
-      || gtab_create(&scene->to_add, 20, NULL) == -1
-      || gtab_create(&scene->fonts, 5, (void (*)(void *))asset_destroy) == -1
-      || gtab_create(&scene->images, 5, (void (*)(void *))asset_destroy) == -1
-      || gtab_create(&scene->textures, 10, (void (*)(void *))asset_destroy) == -1) {
+  if (scene->window == NULL) {
     sfRenderWindow_destroy(scene->window);
     return (-1);
   }
-  if (scene->window == NULL
-      || lclock_create(&scene->clock, frame_per_sec) == -1) {
+  lvector_create(scene->objects, 20, lgameobject_ptr_destroy);
+  lvector_create(scene->to_remove, 20, NULL);
+  lvector_create(scene->to_add, 20, NULL);
+  lvector_create(scene->fonts, 5, asset_destroy);
+  lvector_create(scene->images, 5, asset_destroy);
+  lvector_create(scene->textures, 10, asset_destroy);
+  if (scene->window == NULL || lclock_create(&scene->clock, frame_per_sec) == -1) {
     lscene_destroy(scene);
     return (-1);
   }
-  for (size_t i = 0;
-       i < sizeof(scene->layered_objects) / sizeof(*scene->layered_objects);
-       ++i)
-    if (gtab_create(&scene->layered_objects[i], 5, NULL) == -1) {
-      lscene_destroy(scene);
-      return (-1);
-    }
-  for (size_t i = 0;
-       i < sizeof(scene->subscribe_events) / sizeof(*scene->subscribe_events);
-       ++i) {
-    if (gtab_create(&scene->subscribe_events[i], 5, NULL) == -1) {
-      lscene_destroy(scene);
-      return (-1);
-    }
-  }
+  for (size_t i = 0; i < sizeof(scene->layered_objects) / sizeof(*scene->layered_objects); ++i)
+    lvector_create(scene->layered_objects[i], 5, NULL);
+  for (size_t i = 0; i < sizeof(scene->subscribe_events) / sizeof(*scene->subscribe_events); ++i)
+    lvector_create(scene->subscribe_events[i], 5, NULL);
   sfRenderWindow_setFramerateLimit(scene->window, frame_per_sec + 1);
   return (0);
 }
 
-static lasset_t *asset_create(const char *name, void (*destructor)(void *))
+static void asset_create(lasset_t *asset, const char *name, void *data, void (*destructor)(void *))
 {
-  lasset_t *asset = malloc(sizeof(*asset));
-
-  if (asset == NULL)
-    return (NULL);
   asset->name = strdup(name);
-  if (asset->name == NULL)
-    return (NULL);
   asset->destructor = destructor;
-  return (asset);
+  asset->data = data;
 }
 
 void lscene_destroy(lscene_t *scene)
 {
   sfRenderWindow_destroy(scene->window);
   lclock_destroy(&scene->clock);
-  gtab_destroy(&scene->objects);
-  scene->to_add.destructor = (void (*)(void *))lgameobject_destroy;
-  gtab_destroy(&scene->to_add);
-  gtab_destroy(&scene->to_remove);
-  for (size_t i = 0;
-       i < sizeof(scene->layered_objects) / sizeof(*scene->layered_objects);
-       ++i)
-    gtab_destroy(&scene->layered_objects[i]);
-  for (size_t i = 0;
-       i < sizeof(scene->subscribe_events) / sizeof(*scene->subscribe_events);
-       ++i)
-    gtab_destroy(&scene->subscribe_events[i]);
-  gtab_destroy(&scene->fonts);
-  gtab_destroy(&scene->images);
-  gtab_destroy(&scene->textures);
+  lvector_destroy(scene->objects);
+  scene->to_add.destr = lgameobject_ptr_destroy;
+  lvector_destroy(scene->to_add);
+  lvector_destroy(scene->to_remove);
+  for (size_t i = 0; i < sizeof(scene->layered_objects) / sizeof(*scene->layered_objects); ++i)
+    lvector_destroy(scene->layered_objects[i]);
+  for (size_t i = 0; i < sizeof(scene->subscribe_events) / sizeof(*scene->subscribe_events); ++i)
+    lvector_destroy(scene->subscribe_events[i]);
+  lvector_destroy(scene->fonts);
+  lvector_destroy(scene->images);
+  lvector_destroy(scene->textures);
 }
 
-int lscene_add_gameobject(lscene_t *scene, lgameobject_t *new_obj)
+void lscene_add_gameobject(lscene_t *scene, lgameobject_t *new_obj)
 {
-  if (gtab_append(&scene->to_add, new_obj) == -1)
-    return (-1);
-  return (0);
+  lvector_push_back(scene->to_add, new_obj);
 }
 
-int lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj)
+void lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj)
 {
-  if (gtab_append(&scene->to_remove, obj) == -1)
-    return (-1);
-  return (0);
+  lvector_push_back(scene->to_remove, obj);
 }
 
-int lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab,
-                               const char *name)
+int lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *name)
 {
-  lgameobject_t *obj;
-
   if (gtab_create(empty_tab, 10, NULL) == -1)
     return (-1);
   for (size_t i = 0; i < scene->objects.len; ++i) {
-    obj = scene->objects.i[i];
-    if (strcmp(obj->name, name) == 0 && gtab_append(empty_tab, obj) == -1)
+    if (strcmp(scene->objects.arr[i]->name, name) == 0
+        && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
       return (-1);
   }
   for (size_t i = 0; i < scene->to_add.len; ++i) {
-    obj = scene->to_add.i[i];
-    if (strcmp(obj->name, name) == 0 && gtab_append(empty_tab, obj) == -1)
+    if (strcmp(scene->objects.arr[i]->name, name) == 0
+        && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
       return (-1);
   }
   return (0);
@@ -122,38 +97,29 @@ int lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab,
 
 int lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag)
 {
-  lgameobject_t *obj;
-
   if (gtab_create(empty_tab, 10, NULL) == -1)
     return (-1);
   for (size_t i = 0; i < scene->objects.len; ++i) {
-    obj = scene->objects.i[i];
-    if (obj->tag == tag && gtab_append(empty_tab, obj) == -1)
+    if (scene->objects.arr[i]->tag == tag && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
       return (-1);
   }
   for (size_t i = 0; i < scene->to_add.len; ++i) {
-    obj = scene->to_add.i[i];
-    if (obj->tag == tag && gtab_append(empty_tab, obj) == -1)
+    if (scene->objects.arr[i]->tag == tag && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
       return (-1);
   }
   return (0);
 }
 
-int lscene_get_objects_by_type(lscene_t *scene, gtab_t *empty_tab,
-                               enum lgameobject_type type)
+int lscene_get_objects_by_type(lscene_t *scene, gtab_t *empty_tab, enum lgameobject_type type)
 {
-  lgameobject_t *obj;
-
   if (gtab_create(empty_tab, 10, NULL) == -1)
     return (-1);
   for (size_t i = 0; i < scene->objects.len; ++i) {
-    obj = scene->objects.i[i];
-    if (obj->type == type && gtab_append(empty_tab, obj) == -1)
+    if (scene->objects.arr[i]->type == type && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
       return (-1);
   }
   for (size_t i = 0; i < scene->to_add.len; ++i) {
-    obj = scene->to_add.i[i];
-    if (obj->type == type && gtab_append(empty_tab, obj) == -1)
+    if (scene->objects.arr[i]->type == type && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
       return (-1);
   }
   return (0);
@@ -190,62 +156,40 @@ void lscene_set_framerate(lscene_t *scene, uint32_t framerate)
   sfRenderWindow_setFramerateLimit(scene->window, framerate * 2);
 }
 
-static void update_display_objects(gtab_t *vector)
+static void deploy_add_objects(lscene_t *scene)
 {
-  lgameobject_t *obj;
-
-  for (size_t i = 0; i < vector->len; ++i) {
-    obj = vector->i[i];
-    lgameobject_update(obj);
-    lgameobject_display(obj);
-  }
-}
-
-static int deploy_add_objects(lscene_t *scene)
-{
-  lgameobject_t *go;
   sfEventType type;
 
   while (scene->to_add.len > 0) {
-    go = scene->to_add.i[0];
-    go->scene = scene;
-    if (gtab_append(&scene->objects, go) == -1
-        || gtab_append(&scene->layered_objects[go->layer], go) == -1)
-      return (-1);
-    for (size_t i = 0; i < go->subscribed_events.len; ++i) {
-      type = (long)go->subscribed_events.i[i];
-      if (gtab_append(&scene->subscribe_events[type], go) == -1)
-        return (-1);
+    scene->to_add.arr[0]->scene = scene;
+    lvector_push_back(scene->objects, scene->to_add.arr[0]);
+    lvector_push_back(scene->layered_objects[scene->to_add.arr[0]->layer], scene->to_add.arr[0]);
+    for (size_t i = 0; i < scene->to_add.arr[0]->subscribed_events.len; ++i) {
+      type = scene->to_add.arr[0]->subscribed_events.arr[i];
+      lvector_push_back(scene->subscribe_events[type], scene->to_add.arr[0]);
     }
-    lgameobject_start(go);
-    gtab_remove_at(&scene->to_add, 0);
+    lgameobject_start(scene->to_add.arr[0]);
+    lvector_erase(scene->to_add, 0);
   }
-  return (0);
 }
 
 static void delete_standby_objects(lscene_t *scene)
 {
-  lgameobject_t *go;
-
   for (size_t i = 0; i < scene->to_remove.len; ++i) {
-    go = scene->to_remove.i[i];
-    gtab_remove(&scene->layered_objects[go->layer], go);
-    gtab_remove(&scene->objects, go);
+    lvector_erase_item(scene->layered_objects[scene->to_remove.arr[i]->layer],
+                       scene->to_remove.arr[i]);
+    lvector_erase_item(scene->objects, scene->to_remove.arr[i]);
   }
-  gtab_clear(&scene->to_remove);
+  lvector_clear(scene->to_remove);
 }
 
 static void call_subscribed_events(lscene_t *scene)
 {
   sfEvent event;
-  lgameobject_t *obj;
 
-  while (sfRenderWindow_pollEvent(scene->window, &event)) {
-    for (size_t i = 0; i < scene->subscribe_events[event.type].len; ++i) {
-      obj = scene->subscribe_events[event.type].i[i];
-      lgameobject_catch_event(obj, &event);
-    }
-  }
+  while (sfRenderWindow_pollEvent(scene->window, &event))
+    for (size_t i = 0; i < scene->subscribe_events[event.type].len; ++i)
+      lgameobject_catch_event(scene->subscribe_events[event.type].arr[i], &event);
 }
 
 void lscene_run(lscene_t *scene)
@@ -255,26 +199,26 @@ void lscene_run(lscene_t *scene)
   while (scene->running) {
     sfRenderWindow_clear(scene->window, sfBlack);
     call_subscribed_events(scene);
-    if (deploy_add_objects(scene) == -1)
-      fprintf(stderr, "Error: Not enough memory, can't add new object\n");
+    deploy_add_objects(scene);
     delete_standby_objects(scene);
     for (size_t i = 0; i < LSF_MAXIMUM_LAYERS; ++i)
-      update_display_objects(
-              &scene->layered_objects[LSF_MAXIMUM_LAYERS - i - 1]);
+      for (size_t j = 0; j < scene->layered_objects[LSF_MAXIMUM_LAYERS - i - 1].len; ++j) {
+        lgameobject_update(scene->layered_objects[LSF_MAXIMUM_LAYERS - i - 1].arr[j]);
+        lgameobject_display(scene->layered_objects[LSF_MAXIMUM_LAYERS - i - 1].arr[j]);
+      }
     sfRenderWindow_display(scene->window);
     lclock_rtime(&scene->clock);
   }
   sfRenderWindow_close(scene->window);
 }
 
-static lasset_t *find_asset(gtab_t *list, const char *name)
+static lasset_t *find_asset(void *p, const char *name)
 {
-  lasset_t *asset;
+  lvector(lasset_t) *list = p;
 
   for (size_t i = 0; i < list->len; ++i) {
-    asset = list->i[i];
-    if (strcmp(asset->name, name) == 0)
-      return (asset);
+    if (strcmp(list->arr[i].name, name) == 0)
+      return (&list->arr[i]);
   }
   return (NULL);
 }
@@ -289,12 +233,8 @@ const sfFont *lscene_get_font(lscene_t *scene, const char *name)
   font = sfFont_createFromFile(name);
   if (font == NULL)
     return (NULL);
-  asset = asset_create(name, (void (*)(void *))sfFont_destroy);
-  if (asset == NULL)
-    return (NULL);
-  asset->data = font;
-  gtab_append(&scene->fonts, asset);
-  return (asset->data);
+  lvector_emplace_back(scene->fonts, asset_create, name, font, (void (*)(void *))sfFont_destroy);
+  return (font);
 }
 
 const sfImage *lscene_get_image(lscene_t *scene, const char *name)
@@ -307,12 +247,8 @@ const sfImage *lscene_get_image(lscene_t *scene, const char *name)
   image = sfImage_createFromFile(name);
   if (image == NULL)
     return (NULL);
-  asset = asset_create(name, (void (*)(void *))sfImage_destroy);
-  if (asset == NULL)
-    return (NULL);
-  asset->data = image;
-  gtab_append(&scene->images, asset);
-  return (asset->data);
+  lvector_emplace_back(scene->images, asset_create, name, image, (void (*)(void *))sfImage_destroy);
+  return (image);
 }
 
 const sfTexture *lscene_get_texture(lscene_t *scene, const char *name)
@@ -325,10 +261,6 @@ const sfTexture *lscene_get_texture(lscene_t *scene, const char *name)
   texture = sfTexture_createFromFile(name, NULL);
   if (texture == NULL)
     return (NULL);
-  asset = asset_create(name, (void (*)(void *))sfTexture_destroy);
-  if (asset == NULL)
-    return (NULL);
-  asset->data = texture;
-  gtab_append(&scene->textures, asset);
-  return (asset->data);
+  lvector_emplace_back(scene->textures, asset_create, name, texture, (void (*)(void *))sfTexture_destroy);
+  return (texture);
 }
