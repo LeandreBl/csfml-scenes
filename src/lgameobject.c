@@ -54,13 +54,15 @@ void lgameobject_destroy(lgameobject_t *obj)
   sfSprite_destroy(obj->sprite);
   if (obj->destroy != NULL)
     obj->destroy(obj);
-  for (size_t i = 0; i < obj->childs.len; ++i)
-    obj->childs.arr[i]->parent = NULL;
+  lvector_foreach(object, obj->childs) {
+    (*object)->parent = NULL;
+  }
   if (obj->parent != NULL)
     lvector_erase_item(obj->parent->childs, obj);
   lvector_destroy(obj->childs);
-  for (size_t i = 0; i < obj->subscribed_events.len; ++i)
-    lgameobject_unsubscribe(obj, obj->subscribed_events.arr[i]);
+  lvector_foreach(event, obj->subscribed_events) {
+    lgameobject_unsubscribe(obj, *event);
+  }
   lvector_destroy(obj->subscribed_events);
   free(obj->name);
   free(obj);

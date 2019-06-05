@@ -5,6 +5,8 @@
 #include "LSCENE/lgameobject.h"
 #include "LSCENE/lscene.h"
 
+#define ARRAY_LEN(array) (sizeof(array) / sizeof(*array))
+
 static void asset_destroy(lasset_t *asset)
 {
   free(asset->name);
@@ -36,9 +38,9 @@ int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec)
     lscene_destroy(scene);
     return (-1);
   }
-  for (size_t i = 0; i < sizeof(scene->layered_objects) / sizeof(*scene->layered_objects); ++i)
+  for (size_t i = 0; i < ARRAY_LEN(scene->layered_objects); ++i)
     lvector_create(scene->layered_objects[i], 5, NULL);
-  for (size_t i = 0; i < sizeof(scene->subscribe_events) / sizeof(*scene->subscribe_events); ++i)
+  for (size_t i = 0; i < ARRAY_LEN(scene->subscribe_events); ++i)
     lvector_create(scene->subscribe_events[i], 5, NULL);
   sfRenderWindow_setFramerateLimit(scene->window, frame_per_sec + 1);
   return (0);
@@ -59,9 +61,9 @@ void lscene_destroy(lscene_t *scene)
   scene->to_add.destr = lgameobject_ptr_destroy;
   lvector_destroy(scene->to_add);
   lvector_destroy(scene->to_remove);
-  for (size_t i = 0; i < sizeof(scene->layered_objects) / sizeof(*scene->layered_objects); ++i)
+  for (size_t i = 0; i < ARRAY_LEN(scene->layered_objects); ++i)
     lvector_destroy(scene->layered_objects[i]);
-  for (size_t i = 0; i < sizeof(scene->subscribe_events) / sizeof(*scene->subscribe_events); ++i)
+  for (size_t i = 0; i < ARRAY_LEN(scene->subscribe_events); ++i)
     lvector_destroy(scene->subscribe_events[i]);
   lvector_destroy(scene->fonts);
   lvector_destroy(scene->images);
@@ -82,16 +84,12 @@ int lscene_get_objects_by_name(lscene_t *scene, gtab_t *empty_tab, const char *n
 {
   if (gtab_create(empty_tab, 10, NULL) == -1)
     return (-1);
-  for (size_t i = 0; i < scene->objects.len; ++i) {
-    if (strcmp(scene->objects.arr[i]->name, name) == 0
-        && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
+  lvector_foreach(object, scene->objects)
+    if (strcmp((*object)->name, name) == 0 && gtab_append(empty_tab, *object) == -1)
       return (-1);
-  }
-  for (size_t i = 0; i < scene->to_add.len; ++i) {
-    if (strcmp(scene->objects.arr[i]->name, name) == 0
-        && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
+  lvector_foreach(object, scene->to_add)
+    if (strcmp((*object)->name, name) == 0 && gtab_append(empty_tab, *object) == -1)
       return (-1);
-  }
   return (0);
 }
 
@@ -99,14 +97,12 @@ int lscene_get_objects_by_tag(lscene_t *scene, gtab_t *empty_tab, int tag)
 {
   if (gtab_create(empty_tab, 10, NULL) == -1)
     return (-1);
-  for (size_t i = 0; i < scene->objects.len; ++i) {
-    if (scene->objects.arr[i]->tag == tag && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
+  lvector_foreach(object, scene->objects)
+    if ((*object)->tag == tag && gtab_append(empty_tab, *object) == -1)
       return (-1);
-  }
-  for (size_t i = 0; i < scene->to_add.len; ++i) {
-    if (scene->objects.arr[i]->tag == tag && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
+  lvector_foreach(object, scene->to_add)
+    if ((*object)->tag == tag && gtab_append(empty_tab, *object) == -1)
       return (-1);
-  }
   return (0);
 }
 
@@ -114,14 +110,12 @@ int lscene_get_objects_by_type(lscene_t *scene, gtab_t *empty_tab, enum lgameobj
 {
   if (gtab_create(empty_tab, 10, NULL) == -1)
     return (-1);
-  for (size_t i = 0; i < scene->objects.len; ++i) {
-    if (scene->objects.arr[i]->type == type && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
+  lvector_foreach(object, scene->objects)
+    if ((*object)->type == type && gtab_append(empty_tab, *object) == -1)
       return (-1);
-  }
-  for (size_t i = 0; i < scene->to_add.len; ++i) {
-    if (scene->objects.arr[i]->type == type && gtab_append(empty_tab, scene->objects.arr[i]) == -1)
+  lvector_foreach(object, scene->to_add)
+    if ((*object)->type == type && gtab_append(empty_tab, *object) == -1)
       return (-1);
-  }
   return (0);
 }
 
@@ -158,16 +152,12 @@ void lscene_set_framerate(lscene_t *scene, uint32_t framerate)
 
 static void deploy_add_objects(lscene_t *scene)
 {
-  sfEventType type;
-
   while (scene->to_add.len > 0) {
     scene->to_add.arr[0]->scene = scene;
     lvector_push_back(scene->objects, scene->to_add.arr[0]);
     lvector_push_back(scene->layered_objects[scene->to_add.arr[0]->layer], scene->to_add.arr[0]);
-    for (size_t i = 0; i < scene->to_add.arr[0]->subscribed_events.len; ++i) {
-      type = scene->to_add.arr[0]->subscribed_events.arr[i];
-      lvector_push_back(scene->subscribe_events[type], scene->to_add.arr[0]);
-    }
+    lvector_foreach(event, scene->to_add.arr[0]->subscribed_events)
+      lvector_push_back(scene->subscribe_events[*event], scene->to_add.arr[0]);
     lgameobject_start(scene->to_add.arr[0]);
     lvector_erase(scene->to_add, 0);
   }
@@ -175,10 +165,9 @@ static void deploy_add_objects(lscene_t *scene)
 
 static void delete_standby_objects(lscene_t *scene)
 {
-  for (size_t i = 0; i < scene->to_remove.len; ++i) {
-    lvector_erase_item(scene->layered_objects[scene->to_remove.arr[i]->layer],
-                       scene->to_remove.arr[i]);
-    lvector_erase_item(scene->objects, scene->to_remove.arr[i]);
+  lvector_foreach(object, scene->to_remove) {
+    lvector_erase_item(scene->layered_objects[(*object)->layer], *object);
+    lvector_erase_item(scene->objects, *object);
   }
   lvector_clear(scene->to_remove);
 }
@@ -188,8 +177,8 @@ static void call_subscribed_events(lscene_t *scene)
   sfEvent event;
 
   while (sfRenderWindow_pollEvent(scene->window, &event))
-    for (size_t i = 0; i < scene->subscribe_events[event.type].len; ++i)
-      lgameobject_catch_event(scene->subscribe_events[event.type].arr[i], &event);
+    lvector_foreach(object, scene->subscribe_events[event.type])
+      lgameobject_catch_event(*object, &event);
 }
 
 void lscene_run(lscene_t *scene)
@@ -202,9 +191,9 @@ void lscene_run(lscene_t *scene)
     deploy_add_objects(scene);
     delete_standby_objects(scene);
     for (size_t i = 0; i < LSF_MAXIMUM_LAYERS; ++i)
-      for (size_t j = 0; j < scene->layered_objects[LSF_MAXIMUM_LAYERS - i - 1].len; ++j) {
-        lgameobject_update(scene->layered_objects[LSF_MAXIMUM_LAYERS - i - 1].arr[j]);
-        lgameobject_display(scene->layered_objects[LSF_MAXIMUM_LAYERS - i - 1].arr[j]);
+      lvector_foreach(object, scene->layered_objects[LSF_MAXIMUM_LAYERS - i - 1]) {
+        lgameobject_update(*object);
+        lgameobject_display(*object);
       }
     sfRenderWindow_display(scene->window);
     lclock_rtime(&scene->clock);
@@ -216,9 +205,9 @@ static lasset_t *find_asset(void *p, const char *name)
 {
   lvector(lasset_t) *list = p;
 
-  for (size_t i = 0; i < list->len; ++i) {
-    if (strcmp(list->arr[i].name, name) == 0)
-      return (&list->arr[i]);
+  lvector_foreach(asset, *list) {
+    if (strcmp(asset->name, name) == 0)
+      return (asset);
   }
   return (NULL);
 }
