@@ -46,11 +46,14 @@ int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec)
   return (0);
 }
 
-static void asset_create(lasset_t *asset, const char *name, void *data, void (*destructor)(void *))
+static int asset_create(lasset_t *asset, const char *name, void *data, void (*destructor)(void *))
 {
   asset->name = strdup(name);
+  if (asset->name == NULL)
+    return -1;
   asset->destructor = destructor;
   asset->data = data;
+  return 0;
 }
 
 void lscene_destroy(lscene_t *scene)
