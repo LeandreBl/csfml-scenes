@@ -1,29 +1,29 @@
 #ifndef _LGAMEOBJECT_H_
-# define _LGAMEOBJECT_H_
+#define _LGAMEOBJECT_H_
 
-# include <stdint.h>
-# include <SFML/Window/Event.h>
-# include <SFML/Graphics/Sprite.h>
-# include <LSCENE/lgameobject_types.h>
-# include <sys/cdefs.h>
-# include <lvector.h>
+#include <stdint.h>
+#include <SFML/Window/Event.h>
+#include <SFML/Graphics/Sprite.h>
+#include <LSCENE/lgameobject_types.h>
+#include <sys/cdefs.h>
+#include <lvector.h>
 
 struct lsf_scene_s;
 
 typedef struct lsfgameobject_s {
-  struct lsfgameobject_s *parent;
-  sfSprite *sprite;
-  struct lsf_scene_s *scene;
-  char *name;
-  int tag;
-  enum lgameobject_type type;
-  uint32_t layer;
-  lvector(struct lsfgameobject_s *) childs;
-  lvector(sfEventType) subscribed_events;
-  void (* start)(struct lsfgameobject_s *self);
-  void (* update)(struct lsfgameobject_s *self);
-  void (* catch_event)(struct lsfgameobject_s *self, const sfEvent *event);
-  void (* destroy)(struct lsfgameobject_s *self);
+	struct lsfgameobject_s *parent;
+	sfSprite *sprite;
+	struct lsf_scene_s *scene;
+	char *name;
+	int tag;
+	enum lgameobject_type type;
+	uint32_t layer;
+	lvector(struct lsfgameobject_s *) childs;
+	lvector(sfEventType) subscribed_events;
+	void (*start)(struct lsfgameobject_s *self);
+	void (*update)(struct lsfgameobject_s *self);
+	void (*catch_event)(struct lsfgameobject_s *self, const sfEvent *event);
+	void (*destroy)(struct lsfgameobject_s *self);
 } lgameobject_t;
 
 lgameobject_t *lgameobject_empty(const char *name) __THROW __nonnull((1));

@@ -1,19 +1,18 @@
 #ifndef LCLOCK_H_
-# define LCLOCK_H_
+#define LCLOCK_H_
 
-# include <stdint.h>
-# include <SFML/System/Clock.h>
-# include <sys/cdefs.h>
+#include <stdint.h>
+#include <SFML/System/Clock.h>
+#include <sys/cdefs.h>
 
-typedef struct lsf_clock_s
-{
-  sfClock *clock;
-  double tick;
-  double timescale;
-  double time;
-  double prevtime;
-  double deltatime;
-  uint32_t fps;
+typedef struct lsf_clock_s {
+	sfClock *clock;
+	double tick;
+	double timescale;
+	double time;
+	double prevtime;
+	double deltatime;
+	uint32_t fps;
 } lclock_t;
 
 int lclock_create(lclock_t *clock, uint32_t frame_per_sec) __THROW __nonnull((1));
