@@ -114,7 +114,10 @@ void lgameobject_move(lgameobject_t *obj, sfVector2f offset)
 
 void lgameobject_subscribe(lgameobject_t *object, sfEventType type)
 {
-	lvector_push_back(object->subscribed_events, type);
+	lvector_spush_back(object->subscribed_events, type);
+	if (object->scene != NULL)
+		lvector_spush_back(object->scene->subscribe_events[type],
+				  object);
 }
 
 void lgameobject_unsubscribe(lgameobject_t *object, sfEventType type)
