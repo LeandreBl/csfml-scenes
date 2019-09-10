@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 #include "LSCENE/lgameobject_types.h"
-#include "LSCENE/ltextbox.h"
+#include "LSCENE/linputbox.h"
 
 void linputbox_set_font(lgameobject_t *textbox, const sfFont *font)
 {
@@ -26,18 +26,16 @@ void linputbox_set_color(lgameobject_t *textbox, sfColor color)
 	sfText_setFillColor(obj->render_text, color);
 }
 
-void linputbox_set_position(lgameobject_t *textbox, sfVector2f position)
+static void linputbox_set_position(linputbox_t *obj, sfVector2f position)
 {
-	linputbox_t *obj = (linputbox_t *)textbox;
-
-	lgameobject_set_position(textbox, position);
-	sfText_setPosition(obj->render_text, position);
+    sfText_setPosition(obj->render_text, position);
 }
 
 static void update(lgameobject_t *textbox)
 {
 	linputbox_t *obj = (linputbox_t *)textbox;
 
+    linputbox_set_position(obj, lgameobject_get_position(textbox));
 	if (lscene_time(textbox->scene) - obj->elapsed >= 1.0) {
 		obj->blink = !obj->blink;
 		obj->elapsed = lscene_time(textbox->scene);
@@ -134,7 +132,7 @@ lgameobject_t *linputbox_create(sfVector2f position, const char *placeholder,
 	lgameobject_subscribe(&obj->base_object, sfEvtMouseButtonReleased);
 	lgameobject_subscribe(&obj->base_object, sfEvtKeyPressed);
 	lgameobject_subscribe(&obj->base_object, sfEvtTextEntered);
-	linputbox_set_position((lgameobject_t *)obj, position);
+    lgameobject_set_position(&obj->base_object, position);
 	linputbox_set_character_size((lgameobject_t *)obj, character_size);
 	linputbox_set_color((lgameobject_t *)obj, color);
 	obj->base_object.type = LINPUTBOX_TYPE;
