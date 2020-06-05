@@ -127,7 +127,6 @@ lgameobject_t *linputbox_create(sfVector2f position, const char *placeholder,
 	if (lstr_create(&obj->string, "") == -1
 	    || lstr_create(&obj->placeholder, placeholder) == -1)
 		return (NULL);
-	lgameobject_subscribe(&obj->base_object, sfEvtMouseMoved);
 	lgameobject_subscribe(&obj->base_object, sfEvtMouseButtonPressed);
 	lgameobject_subscribe(&obj->base_object, sfEvtMouseButtonReleased);
 	lgameobject_subscribe(&obj->base_object, sfEvtKeyPressed);

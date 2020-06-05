@@ -13,7 +13,6 @@ int lclock_create(lclock_t *clock, uint32_t frame_per_sec)
 	clock->timescale = 1.0;
 	clock->time = 0;
 	clock->prevtime = 0;
-	clock->fps = 0;
 	return (0);
 }
 
@@ -40,7 +39,6 @@ double lclock_rtime(lclock_t *clock)
 
 	clock->time += (rtime - clock->prevtime) * clock->timescale;
 	clock->deltatime = rtime - clock->prevtime;
-	clock->fps = 1.0 / clock->deltatime;
 	clock->prevtime = rtime;
 	return (rtime);
 }

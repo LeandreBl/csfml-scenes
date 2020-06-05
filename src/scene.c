@@ -24,10 +24,8 @@ int lscene_create(lscene_t *scene, const char *name, uint32_t frame_per_sec)
 	const sfVideoMode *modes = sfVideoMode_getFullscreenModes(&count);
 
 	scene->window = sfRenderWindow_create(modes[0], name, sfClose | sfFullscreen, NULL);
-	if (scene->window == NULL) {
-		sfRenderWindow_destroy(scene->window);
+	if (scene->window == NULL)
 		return (-1);
-	}
 	lvector_create(scene->objects, 20, lgameobject_ptr_destroy);
 	lvector_create(scene->to_remove, 20, NULL);
 	lvector_create(scene->to_add, 20, NULL);
