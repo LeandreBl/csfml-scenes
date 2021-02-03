@@ -19,6 +19,7 @@ SRCS		= src/scene.c
 SRCS		+= src/lhnavbar.c
 SRCS		+= src/lcolor.c
 SRCS		+= src/lbutton.c
+SRCS		+= src/ltext_button.c
 SRCS		+= src/vector.c
 SRCS		+= src/linputbox.c
 SRCS		+= src/ltransform.c

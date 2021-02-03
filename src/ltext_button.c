@@ -3,11 +3,22 @@
 #include "LSCENE/lgameobject_types.h"
 #include "LSCENE/lvector.h"
 #include "LSCENE/lscene.h"
-#include "LSCENE/lbutton.h"
+#include "LSCENE/ltext_button.h"
+
+static void place_text(ltext_button_t *button)
+{
+    const sfFloatRect button_rect = sfSprite_getGlobalBounds(button->base_object.sprite);
+    const sfFloatRect text_rect = sfText_getGlobalBounds(button->text);
+    const sfVector2f position = {
+        .x = (button_rect.width - text_rect.width) / 2,
+        .y = (button_rect.height - text_rect.height) / 2,
+    };
+    sfText_setPosition(button->text, position);
+}
 
 static void update(lgameobject_t *obj)
 {
-	lbutton_t *button = (lbutton_t *)obj;
+	ltext_button_t *button = (ltext_button_t *)obj;
 	sfFloatRect rect;
 
 	rect = sfSprite_getGlobalBounds(obj->sprite);
@@ -28,11 +39,12 @@ static void update(lgameobject_t *obj)
 	}
 	else
 		sfSprite_setColor(obj->sprite, sfWhite);
+    place_text(button);
 }
 
 static void catch_event(lgameobject_t *obj, const sfEvent *event)
 {
-	lbutton_t *button = (lbutton_t *)obj;
+	ltext_button_t *button = (ltext_button_t *)obj;
 
 	if (event->type == sfEvtMouseMoved) {
 		button->moved = true;
@@ -48,17 +60,20 @@ static void catch_event(lgameobject_t *obj, const sfEvent *event)
 	}
 }
 
-lgameobject_t *lbutton_create(sfVector2f position, const sfTexture *texture,
-			      void (*caller)(lbutton_t *, void *), void *data)
+lgameobject_t *ltext_button_create(const char *name, sfVector2f position, const sfTexture *texture,
+			      void (*caller)(ltext_button_t *, void *data))
 {
-	lbutton_t *button = calloc(1, sizeof(*button));
+	ltext_button_t *button = calloc(1, sizeof(*button));
 
-	if (button == NULL || lgameobject_create(&button->base_object, "button") == -1)
+	if (button == NULL || lgameobject_create(&button->base_object, name) == -1)
 		return (NULL);
+    button->text = sfText_create();
+    if (button->text == NULL)
+        return NULL;
+    sfText_setString(button->text, name);
 	button->tocall = caller;
-	button->data = data;
 	lgameobject_set_position(&button->base_object, position);
-	lbutton_set_texture(&button->base_object, texture);
+	ltext_button_set_texture(&button->base_object, texture);
 	lgameobject_subscribe(&button->base_object, sfEvtMouseButtonPressed);
 	lgameobject_subscribe(&button->base_object, sfEvtMouseButtonReleased);
 	lgameobject_subscribe(&button->base_object, sfEvtMouseMoved);
@@ -68,7 +83,24 @@ lgameobject_t *lbutton_create(sfVector2f position, const sfTexture *texture,
 	return ((lgameobject_t *)button);
 }
 
-void lbutton_set_texture(lgameobject_t *button, const sfTexture *texture)
+void ltext_button_set_texture(lgameobject_t *button, const sfTexture *texture)
 {
 	sfSprite_setTexture(button->sprite, texture, sfTrue);
+}
+
+
+void ltext_button_set_userdata(lgameobject_t *object, void *data)
+{
+    ltext_button_t *button = (typeof(button))object;
+
+    button->data = data;
+}
+
+void ltext_button_set_text(lgameobject_t *object, const sfFont *font, sfColor color, unsigned int size)
+{
+    ltext_button_t *button = (typeof(button))object;
+
+    sfText_setFont(button->text, font);
+    sfText_setFillColor(button->text, color);
+    sfText_setCharacterSize(button->text, size);
 }
