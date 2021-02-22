@@ -74,6 +74,9 @@ void lscene_destroy(lscene_t *scene)
 void lscene_add_gameobject(lscene_t *scene, lgameobject_t *new_obj)
 {
 	lvector_push_back(scene->to_add, new_obj);
+	lvector_foreach(go, new_obj->childs) {
+		lscene_add_gameobject(scene, *go);
+	}
 }
 
 void lscene_del_gameobject(lscene_t *scene, lgameobject_t *obj)

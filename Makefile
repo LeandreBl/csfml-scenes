@@ -25,6 +25,7 @@ SRCS		+= src/linputbox.c
 SRCS		+= src/ltransform.c
 SRCS		+= src/lclock.c
 SRCS		+= src/lgameobject.c
+SRCS		+= src/ltext.c
 
 TESTS_SRCS	:= $(SRCS)
 

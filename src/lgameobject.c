@@ -92,7 +92,6 @@ void lgameobject_display(lgameobject_t *obj)
 
 void lgameobject_add_child(lgameobject_t *obj, lgameobject_t *new_obj)
 {
-	lscene_add_gameobject(obj->scene, new_obj);
 	lvector_push_back(obj->childs, new_obj);
 	new_obj->parent = obj;
 }

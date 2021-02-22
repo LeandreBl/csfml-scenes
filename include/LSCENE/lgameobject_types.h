@@ -6,6 +6,8 @@ enum lgameobject_type {
 	LINPUTBOX_TYPE,
 	LBUTTON_TYPE,
 	LHNAVBAR_TYPE,
+	LTEXT_TYPE,
+	LTEXT_BUTTON_TYPE
 };
 
 #endif /* !LGAMEOBJECT_TYPES_H_ */
